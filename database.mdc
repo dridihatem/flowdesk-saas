@@ -1,0 +1,126 @@
+---
+description: Database conventions — applied when writing migrations, models, factories, or seeders
+globs: database/migrations/*.php, database/factories/*.php, database/seeders/*.php, app/Models/*.php
+alwaysApply: false
+---
+
+# Database & Model Conventions
+
+## Migration Rules
+- Always write a proper `down()` method — every migration must be reversible
+- First columns after `id`: always `company_id` on tenant tables
+- Add `softDeletes()` on: Company, User, Client, Invoice, Project, Provider
+- Use `ulid()` primary key for public-facing resources
+- Timestamp columns: `timestamps()` on every table, no exceptions
+
+## Required Indexes
+```php
+// Every tenant table needs these minimum indexes:
+$table->index('company_id');
+$table->index(['company_id', 'created_at']);
+$table->index(['company_id', 'status']); // if status column exists
+```
+
+## Column Conventions
+```php
+// Money: always store in smallest unit (cents / millimes), integer
+$table->unsignedBigInteger('amount');       // 10000 = 100.00 USD
+$table->string('currency', 3);             // ISO 4217: USD, EUR, TND
+
+// Status: always enum or string with defined constants in Model
+$table->string('status')->default('draft');
+
+// JSON config/schema columns
+$table->json('settings')->nullable();
+$table->json('schema')->nullable();        // form builder fields
+
+// Sensitive data: encrypted at application layer
+$table->text('smtp_password');             // cast to encrypted in Model
+```
+
+## Model Conventions
+```php
+class Invoice extends Model
+{
+    use HasUlids, SoftDeletes, TenantScope, LogsActivity;
+
+    // 1. fillable or guarded
+    protected $guarded = ['id'];
+
+    // 2. casts — always explicit
+    protected $casts = [
+        'amount'     => 'integer',
+        'due_date'   => 'date',
+        'settings'   => 'array',
+        'sent_at'    => 'datetime',
+    ];
+
+    // 3. relationships
+    public function company(): BelongsTo { ... }
+    public function client(): BelongsTo { ... }
+    public function items(): HasMany { ... }
+
+    // 4. scopes — named by intent
+    public function scopeUnpaid(Builder $q): Builder
+    {
+        return $q->where('status', InvoiceStatus::Unpaid);
+    }
+
+    // 5. NO business logic here — belongs in InvoiceService
+}
+```
+
+## Enums for Status Fields
+```php
+// Always use PHP 8.1 backed enums for status columns
+enum InvoiceStatus: string
+{
+    case Draft    = 'draft';
+    case Sent     = 'sent';
+    case Paid     = 'paid';
+    case Overdue  = 'overdue';
+    case Cancelled = 'cancelled';
+}
+```
+
+## Factory Rules
+- Every model has a factory — no exceptions
+- Use `recycle($company)` for tenant-scoped factories
+- Factories must produce valid, realistic data (Faker)
+```php
+// Tenant-scoped factory pattern
+public function definition(): array
+{
+    return [
+        'company_id' => Company::factory(),
+        'client_id'  => Client::factory(),
+        'status'     => InvoiceStatus::Draft,
+        'amount'     => fake()->numberBetween(10000, 500000),
+        'currency'   => 'USD',
+        'due_date'   => now()->addDays(30),
+    ];
+}
+```
+
+## Key Table Reference
+| Table               | Scope   | Primary Key | Soft Delete |
+|---------------------|---------|-------------|-------------|
+| companies           | global  | ulid        | yes         |
+| users               | tenant  | ulid        | yes         |
+| clients             | tenant  | ulid        | yes         |
+| providers           | tenant  | ulid        | yes         |
+| projects            | tenant  | ulid        | yes         |
+| forms               | tenant  | ulid        | no          |
+| form_fields         | tenant  | id          | no          |
+| form_submissions    | tenant  | ulid        | no          |
+| proposals           | tenant  | ulid        | yes         |
+| invoices            | tenant  | ulid        | yes         |
+| invoice_items       | tenant  | id          | no          |
+| payments            | tenant  | ulid        | no          |
+| transactions        | tenant  | ulid        | no          |
+| subscriptions       | tenant  | id          | no          |
+| plans               | global  | id          | no          |
+| plan_limits         | global  | id          | no          |
+| usage_tracking      | tenant  | id          | no          |
+| company_settings    | tenant  | id          | no          |
+| audit_logs          | tenant  | id          | no          |

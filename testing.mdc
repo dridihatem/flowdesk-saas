@@ -1,0 +1,107 @@
+---
+description: Testing conventions — applied when writing or reviewing test files
+globs: tests/**.php
+alwaysApply: false
+---
+
+# Testing Conventions
+
+## Test Suites
+```
+Unit/     → Services, helpers, value objects — no DB, no HTTP
+Feature/  → HTTP requests, DB interactions — uses RefreshDatabase
+Tenant/   → Tenant-scoped Feature tests — auto-creates Company + User
+```
+
+## TenantTestCase Base Class
+```php
+// All tenant feature tests extend this
+abstract class TenantTestCase extends TestCase
+{
+    use RefreshDatabase;
+
+    protected Company $company;
+    protected User $admin;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->company = Company::factory()->create();
+        $this->admin   = User::factory()
+            ->for($this->company)
+            ->withRole('company_admin')
+            ->create();
+
+        // Simulate subdomain resolution
+        app()->instance('currentCompany', $this->company);
+    }
+
+    protected function actingAsAdmin(): static
+    {
+        return $this->actingAs($this->admin);
+    }
+
+    protected function actingAsMember(): static
+    {
+        $member = User::factory()->for($this->company)->withRole('team_member')->create();
+        return $this->actingAs($member);
+    }
+}
+```
+
+## Test Structure — Given / When / Then
+```php
+/** @test */
+public function company_admin_can_create_invoice(): void
+{
+    // Given
+    $client = Client::factory()->for($this->company)->create();
+
+    // When
+    $response = $this->actingAsAdmin()
+        ->postJson('/api/v1/invoices', [
+            'client_id' => $client->id,
+            'due_date'  => now()->addDays(30)->toDateString(),
+            'items'     => [
+                ['description' => 'Design work', 'quantity' => 1, 'unit_price' => 150000]
+            ],
+        ]);
+
+    // Then
+    $response->assertCreated();
+    $response->assertJsonPath('data.status', 'draft');
+    $this->assertDatabaseHas('invoices', [
+        'company_id' => $this->company->id,
+        'client_id'  => $client->id,
+        'status'     => 'draft',
+    ]);
+}
+```
+
+## What to Test Per Feature
+```
+✓ Happy path (success case)
+✓ Unauthorized access (403)
+✓ Wrong tenant cannot access another tenant's resource (403/404)
+✓ Validation errors (422)
+✓ Plan limit exceeded (402/403)
+✓ Not found (404)
+✓ Edge cases specific to the feature
+```
+
+## Coverage Targets
+```
+Domain/     → 85% minimum
+Services/   → 85% minimum
+Controllers → 70% minimum (covered via Feature tests)
+Models      → relationships + scopes tested
+```
+
+## Commands
+```bash
+php artisan test --testsuite=Unit     # fast, no DB
+php artisan test --testsuite=Feature  # full HTTP
+php artisan test --testsuite=Tenant   # tenant-scoped
+php artisan test --coverage --min=80  # enforce coverage
+```

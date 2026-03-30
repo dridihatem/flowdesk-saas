@@ -1,0 +1,92 @@
+---
+description: Theme engine and UI system — applied when working on ThemeService, Blade layouts, company settings, or CSS variables
+globs: app/Services/ThemeService.php, resources/views/layouts/**.php, resources/css/**.css, app/Http/Controllers/Web/SettingsController.php
+alwaysApply: false
+---
+
+# Theme Engine & UI System
+
+## Theme Resolution (per request)
+```php
+// ThemeService is resolved ONCE per request via service container
+// NEVER query company_settings inside a Blade view directly
+
+class ThemeService
+{
+    public function resolve(Company $company): ThemeConfig
+    {
+        return Cache::tags("company:{$company->id}")
+            ->remember("theme:{$company->id}", 3600, function () use ($company) {
+                $settings = $company->settings;
+                return new ThemeConfig(
+                    name:        $settings->theme_name    ?? 'default',
+                    layout:      $settings->layout_type   ?? 'sidebar',
+                    primary:     $settings->primary_color ?? '#4F46E5',
+                    secondary:   $settings->secondary_color ?? '#7C3AED',
+                    font:        $settings->font_family   ?? 'Inter',
+                    darkMode:    $settings->dark_mode     ?? false,
+                    logo:        $settings->logo_url      ?? null,
+                );
+            });
+    }
+}
+```
+
+## Layout Files Structure
+```
+resources/views/layouts/
+├── themes/
+│   ├── default/
+│   │   ├── sidebar.blade.php
+│   │   ├── topbar.blade.php
+│   │   └── minimal.blade.php
+│   ├── dark-pro/
+│   │   ├── sidebar.blade.php
+│   │   └── topbar.blade.php
+│   ├── minimal/
+│   │   └── topbar.blade.php
+│   └── luxury/
+│       └── sidebar.blade.php
+└── base.blade.php    ← ThemeService injects correct layout
+```
+
+## CSS Variables Injection (base.blade.php)
+```html
+<!-- Injected from ThemeService — never hardcode colors in Blade -->
+<style>
+  :root {
+    --primary:        {{ $theme->primary }};
+    --secondary:      {{ $theme->secondary }};
+    --font-family:    '{{ $theme->font }}', sans-serif;
+  }
+</style>
+```
+
+## Available Themes
+| Name      | Description              | Layouts available     |
+|-----------|--------------------------|----------------------|
+| default   | Clean SaaS, light        | sidebar, topbar      |
+| dark-pro  | Dark mode professional   | sidebar, topbar      |
+| minimal   | Ultra clean, topbar only | topbar               |
+| luxury    | Premium, rich design     | sidebar              |
+
+## Fallback Chain
+```
+1. Try: themes/{theme_name}/{layout_type}.blade.php
+2. Fallback: themes/default/{layout_type}.blade.php
+3. Fallback: themes/default/sidebar.blade.php
+```
+
+## Company Customization Panel
+- Theme selector (visual preview cards)
+- Color picker: primary + secondary (hex input + color wheel)
+- Logo upload → MediaLibrary → CDN
+- Layout selection (sidebar / topbar / minimal)
+- Dark mode toggle
+- Font selection (Google Fonts: Inter, Poppins, DM Sans, Outfit)
+
+## Advanced Customization (Pro/Enterprise only)
+- Custom CSS editor → stored in company_settings.custom_css
+- Injected in <head> after theme variables — can override anything
+- Sanitized via HTMLPurifier before storage
+- Custom dashboard widgets → FUTURE / Phase 7 extension

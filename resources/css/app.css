@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Flowdesk design tokens — keep names aligned with Figma variables (color/text/space).
+ * Theme engine (per-tenant) will override these on the root element later.
+ */
+@layer base {
+    :root {
+        --flow-primary: #2563eb;
+        --flow-primary-hover: #1d4ed8;
+        --flow-secondary: #64748b;
+        --flow-surface: #ffffff;
+        --flow-surface-muted: #f8fafc;
+        --flow-text: #0f172a;
+        --flow-text-muted: #64748b;
+        --flow-border: #e2e8f0;
+        --flow-radius-lg: 0.75rem;
+        --flow-font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+        --flow-text-display: 1.875rem;
+        --flow-text-body: 1rem;
+        --flow-text-small: 0.875rem;
+    }
+
+    .dark {
+        --flow-surface: #0f172a;
+        --flow-surface-muted: #1e293b;
+        --flow-text: #f1f5f9;
+        --flow-text-muted: #94a3b8;
+        --flow-border: #334155;
+    }
+}

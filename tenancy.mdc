@@ -1,0 +1,80 @@
+---
+description: Multi-tenancy rules — applied when working on tenant models, middleware, or services
+globs: app/Http/Middleware/ResolveTenant.php, app/Domain/**/*.php, app/Models/*.php, app/Services/Tenant*.php
+alwaysApply: false
+---
+
+# Multi-Tenancy Architecture
+
+## Tenant Resolution Flow
+```
+Request → ResolveTenant middleware
+       → detect subdomain from Host header
+       → query Company by subdomain column
+       → abort(404) if not found
+       → app()->instance('currentCompany', $company)
+       → setLocale($company->default_locale)
+       → setCurrency($company->default_currency)
+```
+
+## TenantScope Trait
+Apply this trait to ALL tenant-owned models:
+```php
+trait TenantScope
+{
+    public static function bootTenantScope(): void
+    {
+        static::addGlobalScope('tenant', function (Builder $builder) {
+            if (app()->has('currentCompany')) {
+                $builder->where('company_id', app('currentCompany')->id);
+            }
+        });
+
+        static::creating(function ($model) {
+            if (app()->has('currentCompany') && empty($model->company_id)) {
+                $model->company_id = app('currentCompany')->id;
+            }
+        });
+    }
+}
+```
+
+## Models that MUST use TenantScope
+- User, Client, Provider
+- Project, Form, FormField, FormSubmission
+- Proposal, Invoice, InvoiceItem
+- Payment, Transaction
+- Subscription, UsageTracking
+- AuditLog, Notification
+
+## Models that must NOT use TenantScope (global/platform data)
+- Company, Plan, PlanFeature, Currency, Language
+
+## Tenant-safe query pattern
+```php
+// CORRECT — scope is automatic via TenantScope
+Invoice::where('status', 'unpaid')->get();
+
+// CORRECT — explicit when bypassing scope (superadmin only)
+Invoice::withoutGlobalScope('tenant')->where('company_id', $id)->get();
+
+// WRONG — never do this inside tenant context
+Invoice::all(); // missing scope = cross-tenant data leak risk
+```
+
+## Service Container Binding
+```php
+// TenantServiceProvider.php
+$this->app->scoped('currentCompany', fn() => null);
+
+// Access in services (inject, don't use facade)
+public function __construct(
+    private readonly ?Company $company
+) {}
+```
+
+## Subdomain Config
+- Wildcard DNS: *.flowdesk-saas.com → server
+- Local dev: *.flowdesk.test via /etc/hosts or Valet
+- companies table columns: subdomain (unique, indexed), slug
+- Subdomain auto-generated from company name on registration, sanitized

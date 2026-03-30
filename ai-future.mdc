@@ -1,0 +1,75 @@
+---
+description: AI features — applied when any AI, LLM, or ML-related code is mentioned or requested
+globs: app/Domain/AI/**.php, app/Services/AI**.php, app/Jobs/AI**.php
+alwaysApply: false
+---
+
+# AI Features — Phase 14 (NOT NOW)
+
+## Status: FUTURE — Do not implement business logic
+
+All AI features are planned for Phase 14. When working on any AI-related file:
+- Create the **stub/interface only**
+- Mark every unimplemented method with `// TODO:AI - implement in Phase 14`
+- Throw `AiNotAvailableException` in all methods
+- Never install AI packages (openai-php, prism, etc.) until Phase 14
+
+## Planned AI Features (Phase 14)
+```
+- AI proposal generator        → generate proposal content from project brief
+- AI pricing suggestions       → suggest price ranges based on project type
+- Auto form generator          → generate form fields from a description
+- Project summarization        → summarize project activity + timeline
+- AI usage tracking            → count + bill AI credits per company
+```
+
+## Stub Pattern — use this exactly
+```php
+<?php
+
+namespace App\Domain\AI\Services;
+
+use App\Exceptions\AiNotAvailableException;
+
+/**
+ * AI Proposal Generator
+ *
+ * TODO:AI - Implement in Phase 14
+ * Will use OpenAI GPT-4o to generate proposal content from project data.
+ */
+class AiProposalService
+{
+    /**
+     * Generate proposal content from a project brief.
+     *
+     * TODO:AI - implement in Phase 14
+     * @throws AiNotAvailableException
+     */
+    public function generate(array $projectData): string
+    {
+        throw new AiNotAvailableException('AI features are not available yet.');
+    }
+}
+```
+
+## AiNotAvailableException
+```php
+class AiNotAvailableException extends \RuntimeException
+{
+    public function __construct(string $message = 'AI features coming soon.')
+    {
+        parent::__construct($message, 503);
+    }
+}
+```
+
+## UI Handling
+- Show "Coming Soon" badge on AI features in the dashboard
+- Do NOT hide AI menu items — show them as disabled with a badge
+- Badge text: "Coming Soon" or "Phase 2 Release"
+- No click handler — just visual placeholder
+
+## ai_credits in Plans
+- Column exists in plan_limits table (always 0 for now)
+- Do NOT build credit deduction logic yet
+- Do NOT show AI credit balance in billing UI yet

@@ -1,0 +1,119 @@
+---
+description: Auth, roles, and permissions — applied when working on auth controllers, policies, middleware, or role logic
+globs: app/Http/Controllers/Auth/*.php, app/Policies/*.php, app/Http/Middleware/**.php, routes/web.php, routes/api.php
+alwaysApply: false
+---
+
+# Auth, Roles & Permissions
+
+## Guards
+```
+web   → Dashboard (session-based, Sanctum)
+api   → REST API (Sanctum token, per-company)
+```
+
+## Roles (Spatie Laravel Permission)
+```
+super_admin        → Platform owner (Flowdesk team only)
+                     Bypasses all tenant scopes
+                     Access: platform admin panel
+
+company_admin      → Company owner
+                     Full access within their tenant
+                     Can manage team members, settings, billing
+
+team_member        → Employee / staff
+                     Scoped access — managed by company_admin
+                     Cannot access billing or company settings
+
+business_provider  → External partner/provider
+                     Limited dashboard: own projects + proposals only
+                     Cannot see other clients or team data
+```
+
+## Policy Pattern — always use, never inline checks
+```php
+// CORRECT
+$this->authorize('update', $invoice);
+
+// WRONG — never do this in a controller
+if (!auth()->user()->hasRole('company_admin')) abort(403);
+```
+
+## Policy Structure
+```php
+class InvoicePolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return $user->hasAnyRole(['company_admin', 'team_member']);
+    }
+
+    public function view(User $user, Invoice $invoice): bool
+    {
+        // Always check company_id — tenant isolation
+        return $user->company_id === $invoice->company_id;
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->hasAnyRole(['company_admin', 'team_member']);
+    }
+
+    public function update(User $user, Invoice $invoice): bool
+    {
+        return $user->company_id === $invoice->company_id
+            && $user->hasAnyRole(['company_admin', 'team_member'])
+            && $invoice->status === InvoiceStatus::Draft;
+    }
+
+    public function delete(User $user, Invoice $invoice): bool
+    {
+        return $user->company_id === $invoice->company_id
+            && $user->hasRole('company_admin');
+    }
+}
+```
+
+## Route Middleware Groups
+```php
+// Web dashboard routes
+Route::middleware(['web', 'auth', 'verified', 'tenant'])->group(function () {
+    // All dashboard routes here
+});
+
+// Company admin only
+Route::middleware(['role:company_admin'])->group(function () {
+    Route::resource('settings', SettingsController::class);
+    Route::resource('team', TeamController::class);
+});
+
+// API routes
+Route::middleware(['api', 'auth:sanctum', 'tenant'])->prefix('v1')->group(function () {
+    // All API routes here
+});
+```
+
+## API Token Scoping
+- Tokens are scoped per company — no cross-company reuse
+- Token abilities: ['read', 'write', 'webhooks']
+- Tokens stored hashed in personal_access_tokens
+- One active token per company by default (revoke on regenerate)
+
+## 2FA (Optional — company_admin only)
+- Use pragmarx/google2fa-laravel
+- Enforced via middleware: `2fa` on sensitive routes
+- Recovery codes generated + stored encrypted on enable
+
+## Registration Flow
+```
+1. Validate company name + email + password
+2. Create Company (generate subdomain + slug)
+3. Create User (role: company_admin)
+4. Assign default plan (Basic, trial period)
+5. Create company_settings with defaults
+6. Create storage directory: storage/tenants/{company_id}/
+7. Send welcome email (queued)
+8. Fire CompanyRegistered event
+9. Redirect to subdomain dashboard
+```

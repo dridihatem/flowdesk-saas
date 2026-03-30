@@ -1,0 +1,129 @@
+---
+description: Billing, plans, subscriptions, and payments — applied when working on payment controllers, subscription logic, plan limits, or webhook handlers
+globs: app/Domain/Billing/**.php, app/Http/Controllers/Webhooks/**.php, app/Services/UsageTracker.php, config/plans.php
+alwaysApply: false
+---
+
+# Billing, Plans & Payments
+
+## Plan Limits (config/plans.php)
+```php
+return [
+    'basic' => [
+        'price_monthly' => 0,
+        'trial_days'    => 14,
+        'limits' => [
+            'users'       => 3,
+            'projects'    => 5,
+            'forms'       => 2,
+            'submissions' => 100,
+            'widgets'     => 1,
+            'ai_credits'  => 0,   // AI: NOT available yet
+        ],
+    ],
+    'pro' => [
+        'price_monthly' => 2900, // cents
+        'trial_days'    => 0,
+        'limits' => [
+            'users'       => 15,
+            'projects'    => 50,
+            'forms'       => 20,
+            'submissions' => 5000,
+            'widgets'     => 10,
+            'ai_credits'  => 0,   // TODO:AI - enable in Phase 14
+        ],
+    ],
+    'enterprise' => [
+        'price_monthly' => 9900,
+        'trial_days'    => 0,
+        'limits' => [
+            'users'       => -1,  // -1 = unlimited
+            'projects'    => -1,
+            'forms'       => -1,
+            'submissions' => -1,
+            'widgets'     => -1,
+            'ai_credits'  => 0,   // TODO:AI - enable in Phase 14
+        ],
+    ],
+];
+```
+
+## Usage Tracking Pattern
+```php
+// Check BEFORE creating a resource
+class ProjectService
+{
+    public function create(array $data, Company $company): Project
+    {
+        // 1. Check limit first
+        UsageTracker::check('projects', $company); // throws PlanLimitException
+
+        // 2. Create resource
+        $project = Project::create([...$data, 'company_id' => $company->id]);
+
+        // 3. Increment usage after success
+        UsageTracker::increment('projects', $company);
+
+        // 4. Fire event for side effects
+        event(new ProjectCreated($project));
+
+        return $project;
+    }
+}
+```
+
+## CheckPlanLimit Middleware
+```php
+// Apply to resource creation routes
+Route::post('/projects', [ProjectController::class, 'store'])
+    ->middleware('plan.limit:projects');
+```
+
+## Payment Providers
+```
+Stripe     → Primary global payments (cards, SEPA)
+PayPal     → Secondary global option
+Flouci     → Tunisia local payments
+Bank       → Manual bank transfer (confirmed by admin)
+```
+
+## Webhook Handlers — Security First
+```php
+// ALWAYS verify signature before processing
+class StripeWebhookController extends Controller
+{
+    public function handle(Request $request): Response
+    {
+        // 1. Verify signature — abort if invalid
+        $event = Webhook::constructEvent(
+            $request->getContent(),
+            $request->header('Stripe-Signature'),
+            config('services.stripe.webhook_secret')
+        );
+
+        // 2. Dispatch job for async processing
+        StripeWebhookJob::dispatch($event->type, $event->data);
+
+        return response()->json(['received' => true]);
+    }
+}
+```
+
+## Subscription Lifecycle
+```
+trial_started → trial_active → trial_ended
+                                    ↓
+                             subscription_created
+                                    ↓
+                    active → past_due → cancelled
+                      ↓
+                   upgraded / downgraded
+```
+
+## AI Credits — NOT IMPLEMENTED YET
+```php
+// TODO:AI - Phase 14
+// ai_credits column exists in plan_limits but is always 0
+// AiUsageService stub exists but returns PlanLimitException always
+// Do NOT implement AI billing logic until Phase 14
+```
