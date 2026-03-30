@@ -1,0 +1,20 @@
+{
+    "Dashboard": "لوحة التحكم",
+    "Language": "اللغة",
+    "Default currency": "العملة الافتراضية",
+    "Company": "الشركة",
+    "Profile": "الملف الشخصي",
+    "Log Out": "تسجيل الخروج",
+    "Or continue with": "أو المتابعة عبر",
+    "Or register with": "أو التسجيل عبر",
+    "Country (optional, ISO-2)": "الدولة (اختياري، ISO-2)",
+    "Workspace subdomain": "نطاق فرعي للمساحة",
+    "Tenant URL": "رابط المستأجر",
+    "Company API token": "رمز API للشركة",
+    "Sanctum token (Bearer)": "رمز Sanctum (Bearer)",
+    "Save these credentials — they are shown only once.": "احفظ هذه البيانات — تُعرض مرة واحدة فقط.",
+    "Signed in with your social account. You can manage connected providers from profile settings later.": "تم تسجيل الدخول عبر حسابك الاجتماعي. يمكنك إدارة الموصلات لاحقًا من الإعدادات.",
+    "Complete your workspace for": "أكمل مساحتك لـ",
+    "Create workspace": "إنشاء المساحة",
+    "This provider did not return an email. Use another login method.": "لم يُرجع هذا المزود بريدًا. استخدم طريقة أخرى."
+}

@@ -30,10 +30,13 @@
 - [x] JWT/Sanctum for API authentication (Sanctum — `GET /api/user` with Bearer token)
 
 ## PHASE 4: Internationalization & Currency
-- [ ] Multi-language support (i18n): English, French, Spanish, Arabic
-- [ ] Language selector in dashboard
-- [ ] Multi-currency support and auto-selection based on company country
-- [ ] Currency conversion logic for TND, USD, EUR, etc.
+- [x] Multi-language support (i18n): English, French, Spanish, Arabic (`lang/*.json`, `SetLocale` middleware, `users.locale`)
+- [x] Language selector in dashboard
+- [x] Multi-currency support and auto-selection based on company country (`companies.country`, `config/flowdesk.country_currency`)
+- [x] Currency conversion logic for TND, USD, EUR, etc. (`App\Services\CurrencyConverter`, `config/currencies.php`)
+
+## Social login (OAuth)
+- [x] Laravel Socialite — GitHub, Google, LinkedIn OpenID (`SocialAuthController`, `oauth/company` completion for new tenants)
 
 ## PHASE 5: Core Database Models
 - [ ] `companies`

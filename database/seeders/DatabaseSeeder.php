@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Demo Company',
                 'slug' => 'demo',
                 'default_locale' => 'en',
-                'default_currency' => 'USD',
+                'default_currency' => 'TND',
+                'country' => 'TN',
             ],
         );
 

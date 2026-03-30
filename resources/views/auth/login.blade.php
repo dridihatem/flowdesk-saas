@@ -44,4 +44,19 @@
             </x-primary-button>
         </div>
     </form>
+
+    <div class="mt-6">
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400">{{ __('Or continue with') }}</p>
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <a href="{{ route('oauth.redirect', ['provider' => 'github']) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                GitHub
+            </a>
+            <a href="{{ route('oauth.redirect', ['provider' => 'google']) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                Google
+            </a>
+            <a href="{{ route('oauth.redirect', ['provider' => 'linkedin']) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                LinkedIn
+            </a>
+        </div>
+    </div>
 </x-guest-layout>

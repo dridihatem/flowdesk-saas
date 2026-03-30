@@ -23,6 +23,7 @@ class CompanyFactory extends Factory
             'slug' => Str::slug('tenant-'.$token),
             'default_locale' => 'en',
             'default_currency' => 'USD',
+            'country' => null,
         ];
     }
 }

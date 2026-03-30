@@ -1,0 +1,20 @@
+{
+    "Dashboard": "Tableau de bord",
+    "Language": "Langue",
+    "Default currency": "Devise par défaut",
+    "Company": "Entreprise",
+    "Profile": "Profil",
+    "Log Out": "Déconnexion",
+    "Or continue with": "Ou continuer avec",
+    "Or register with": "Ou s'inscrire avec",
+    "Country (optional, ISO-2)": "Pays (optionnel, ISO-2)",
+    "Workspace subdomain": "Sous-domaine de l'espace",
+    "Tenant URL": "URL du tenant",
+    "Company API token": "Jeton API entreprise",
+    "Sanctum token (Bearer)": "Jeton Sanctum (Bearer)",
+    "Save these credentials — they are shown only once.": "Enregistrez ces identifiants — ils ne s'affichent qu'une fois.",
+    "Signed in with your social account. You can manage connected providers from profile settings later.": "Connecté avec votre compte social. Vous pourrez gérer les fournisseurs plus tard dans le profil.",
+    "Complete your workspace for": "Finalisez votre espace pour",
+    "Create workspace": "Créer l'espace",
+    "This provider did not return an email. Use another login method.": "Ce fournisseur n'a pas renvoyé d'e-mail. Utilisez une autre méthode de connexion."
+}

@@ -18,6 +18,23 @@
                 </div>
             </div>
 
+            <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <form method="POST" action="{{ route('locale.update') }}" class="me-4 flex items-center gap-2 text-sm">
+                    @csrf
+                    <label for="nav_locale" class="sr-only">{{ __('Language') }}</label>
+                    <select
+                        id="nav_locale"
+                        name="locale"
+                        class="rounded-md border-gray-300 bg-white text-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+                        onchange="this.form.submit()"
+                    >
+                        @foreach (config('flowdesk.locales', ['en']) as $loc)
+                            <option value="{{ $loc }}" @selected(app()->getLocale() === $loc)>{{ strtoupper($loc) }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">

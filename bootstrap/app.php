@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(prepend: [
             \App\Http\Middleware\ResolveTenant::class,
+            \App\Http\Middleware\SetLocale::class,
         ]);
 
         $middleware->alias([

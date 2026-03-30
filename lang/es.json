@@ -1,0 +1,20 @@
+{
+    "Dashboard": "Panel",
+    "Language": "Idioma",
+    "Default currency": "Moneda predeterminada",
+    "Company": "Empresa",
+    "Profile": "Perfil",
+    "Log Out": "Cerrar sesión",
+    "Or continue with": "O continuar con",
+    "Or register with": "O registrarse con",
+    "Country (optional, ISO-2)": "País (opcional, ISO-2)",
+    "Workspace subdomain": "Subdominio del espacio",
+    "Tenant URL": "URL del tenant",
+    "Company API token": "Token API de la empresa",
+    "Sanctum token (Bearer)": "Token Sanctum (Bearer)",
+    "Save these credentials — they are shown only once.": "Guarde estas credenciales: solo se muestran una vez.",
+    "Signed in with your social account. You can manage connected providers from profile settings later.": "Sesión iniciada con su cuenta social. Podrá gestionar proveedores más tarde en el perfil.",
+    "Complete your workspace for": "Complete su espacio para",
+    "Create workspace": "Crear espacio",
+    "This provider did not return an email. Use another login method.": "Este proveedor no devolvió un correo. Use otro método de acceso."
+}

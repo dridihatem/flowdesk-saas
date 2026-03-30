@@ -31,6 +31,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'company_name' => ['required', 'string', 'max:255'],
+            'country' => ['nullable', 'string', 'size:2'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -43,10 +44,17 @@ class RegisteredUserController extends Controller
             $subdomain = $naming->uniqueSubdomain($request->company_name);
             $slug = $naming->uniqueSlug($request->company_name);
 
+            $country = $request->input('country') ? strtoupper((string) $request->input('country')) : null;
+            $defaultCurrency = $country
+                ? (config('flowdesk.country_currency', [])[$country] ?? 'USD')
+                : 'USD';
+
             $company = Company::query()->create([
                 'name' => $request->company_name,
                 'subdomain' => $subdomain,
                 'slug' => $slug,
+                'country' => $country,
+                'default_currency' => $defaultCurrency,
             ]);
 
             $tenantStorage->bootstrap($company);
@@ -58,6 +66,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'company_id' => $company->id,
+                'locale' => app()->getLocale(),
             ]);
 
             $user->assignRole('company_admin');

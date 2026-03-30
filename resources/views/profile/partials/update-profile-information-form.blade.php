@@ -24,6 +24,16 @@
         </div>
 
         <div>
+            <x-input-label for="locale" :value="__('Language')" />
+            <select id="locale" name="locale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
+                @foreach (config('flowdesk.locales', ['en']) as $loc)
+                    <option value="{{ $loc }}" @selected(old('locale', $user->locale ?? app()->getLocale()) === $loc)>{{ strtoupper($loc) }}</option>
+                @endforeach
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('locale')" />
+        </div>
+
+        <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />

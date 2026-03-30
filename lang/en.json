@@ -1,0 +1,20 @@
+{
+    "Dashboard": "Dashboard",
+    "Language": "Language",
+    "Default currency": "Default currency",
+    "Company": "Company",
+    "Profile": "Profile",
+    "Log Out": "Log Out",
+    "Or continue with": "Or continue with",
+    "Or register with": "Or register with",
+    "Country (optional, ISO-2)": "Country (optional, ISO-2)",
+    "Workspace subdomain": "Workspace subdomain",
+    "Tenant URL": "Tenant URL",
+    "Company API token": "Company API token",
+    "Sanctum token (Bearer)": "Sanctum token (Bearer)",
+    "Save these credentials — they are shown only once.": "Save these credentials — they are shown only once.",
+    "Signed in with your social account. You can manage connected providers from profile settings later.": "Signed in with your social account. You can manage connected providers from profile settings later.",
+    "Complete your workspace for": "Complete your workspace for",
+    "Create workspace": "Create workspace",
+    "This provider did not return an email. Use another login method.": "This provider did not return an email. Use another login method."
+}
