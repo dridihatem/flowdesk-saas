@@ -27,4 +27,15 @@ return [
     */
     'tenant_base_domain' => env('FLOWDESK_TENANT_BASE_DOMAIN'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Wildcard DNS (production)
+    |--------------------------------------------------------------------------
+    |
+    | Point *.flowdesk-saas.com to your app server, set FLOWDESK_TENANT_BASE_DOMAIN
+    | to flowdesk-saas.com, and set SESSION_DOMAIN=.flowdesk-saas.com so session
+    | cookies are shared between app and tenant hosts when you need SSO.
+    |
+    */
+
 ];

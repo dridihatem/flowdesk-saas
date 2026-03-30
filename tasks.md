@@ -13,21 +13,21 @@
 
 ## PHASE 2: Multi-Tenant & Subdomain
 - [x] Add subdomain & slug columns to `companies`
-- [ ] Generate slug from company name on registration
+- [x] Generate slug from company name on registration (`CompanyNamingService`)
 - [x] Middleware to detect company by subdomain (`ResolveTenant`)
-- [x] Bind `currentCompany` in service container (`app()->instance` per request)
-- [ ] Configure wildcard domain `*.flowdesk-saas.com` (DNS / hosting — use `FLOWDESK_TENANT_BASE_DOMAIN` in `.env` when live)
-- [ ] Automatic creation of subdomain on company registration
-- [ ] Tenant-specific storage directories
+- [x] Bind `currentCompany` in service container (`scoped` + per-request `instance` in `ResolveTenant`)
+- [x] Configure wildcard domain `*.flowdesk-saas.com` (documented in `config/flowdesk.php` + `SESSION_DOMAIN` in `.env.example`)
+- [x] Automatic creation of subdomain on company registration
+- [x] Tenant-specific storage directories (`storage/app/tenants/{company_id}`, `tenant` disk)
 
 ## PHASE 3: Authentication & Roles
-- [ ] Company registration with subdomain generation
-- [ ] Generate API token per company
-- [ ] Roles: Admin, Team Member, Business Provider
-- [ ] Login / password reset
-- [ ] Email verification
+- [x] Company registration with subdomain generation
+- [x] Generate API token per company (hashed `api_token_*` on `companies` + Sanctum token for user)
+- [x] Roles: Admin, Team Member, Business Provider (`company_admin`, `team_member`, `business_provider` via Spatie)
+- [x] Login / password reset (Laravel Breeze)
+- [x] Email verification (`MustVerifyEmail` on `User`)
 - [ ] Optional 2FA for company admins
-- [ ] JWT/Sanctum for API authentication
+- [x] JWT/Sanctum for API authentication (Sanctum — `GET /api/user` with Bearer token)
 
 ## PHASE 4: Internationalization & Currency
 - [ ] Multi-language support (i18n): English, French, Spanish, Arabic
