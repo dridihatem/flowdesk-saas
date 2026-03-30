@@ -2,21 +2,21 @@
 # Flowdesk SaaS - International Multi-Sector Tasks.md
 
 ## PHASE 1: Project Setup
-- [ ] Initialize Laravel 11 project
-- [ ] Database Mysql host: 127.0.0.1, port: 8889, database: flowdesksaas, user and password: root
-- [ ] Configure .env (DB, APP_URL, CACHE, QUEUE, STORAGE)
-- [ ] Install TailwindCSS + Alpine.js / Vue.js
-- [ ] Setup Git repository and CI/CD pipeline
-- [ ] push to the git repo https://github.com/dridihatem/flowdesk-saas.git
-- [ ] Create base layout (auth + dashboard)
-- [ ] Setup Figma design system (UI kit, components, colors, typography)
+- [x] Initialize Laravel project (Laravel 13 — current `laravel/laravel` skeleton; tasks originally said 11)
+- [x] Database Mysql host: 127.0.0.1, port: 8889, database: flowdesksaas, user and password: root
+- [x] Configure .env (DB, APP_URL, CACHE, QUEUE, STORAGE)
+- [x] Install TailwindCSS + Alpine.js / Vue.js (Breeze Blade + Alpine; Vue 3 island on dashboard)
+- [x] Setup Git repository and CI/CD pipeline
+- [x] push to the git repo https://github.com/dridihatem/flowdesk-saas.git
+- [x] Create base layout (auth + dashboard)
+- [ ] Setup Figma design system (UI kit, components, colors, typography) — *code tokens in `resources/css/app.css`; create the Figma library separately and sync names*
 
 ## PHASE 2: Multi-Tenant & Subdomain
-- [ ] Add subdomain & slug columns to `companies`
+- [x] Add subdomain & slug columns to `companies`
 - [ ] Generate slug from company name on registration
-- [ ] Middleware to detect company by subdomain
-- [ ] Bind `currentCompany` in service container
-- [ ] Configure wildcard domain `*.flowdesk-saas.com`
+- [x] Middleware to detect company by subdomain (`ResolveTenant`)
+- [x] Bind `currentCompany` in service container (`app()->instance` per request)
+- [ ] Configure wildcard domain `*.flowdesk-saas.com` (DNS / hosting — use `FLOWDESK_TENANT_BASE_DOMAIN` in `.env` when live)
 - [ ] Automatic creation of subdomain on company registration
 - [ ] Tenant-specific storage directories
 
