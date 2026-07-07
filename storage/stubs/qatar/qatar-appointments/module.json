@@ -1,0 +1,17 @@
+{
+    "slug": "qatar-appointments",
+    "name": "Appointments (Qatar)",
+    "version": "1.0.0",
+    "description": "Clinic, salon and spa appointments with calendar and invoicing links.",
+    "author": "FlowDesk",
+    "nav": { "icon": "calendar" },
+    "integrations": {
+        "clients": true,
+        "invoices": true,
+        "calendar": true
+    },
+    "ai": {
+        "modes": ["client_email", "summary"],
+        "label": "Nova drafts appointment reminders and no-show follow-ups."
+    }
+}

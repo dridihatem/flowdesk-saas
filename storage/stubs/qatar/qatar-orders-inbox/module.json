@@ -1,0 +1,18 @@
+{
+    "slug": "qatar-orders-inbox",
+    "name": "Orders Inbox (Qatar)",
+    "version": "1.0.0",
+    "description": "Omnichannel orders with COD and online payment status — linked to clients and invoices.",
+    "author": "FlowDesk",
+    "nav": { "icon": "invoices" },
+    "integrations": {
+        "clients": true,
+        "invoices": true,
+        "payments": true,
+        "projects": true
+    },
+    "ai": {
+        "modes": ["summary", "client_email"],
+        "label": "Nova summarizes order backlog and drafts client updates."
+    }
+}

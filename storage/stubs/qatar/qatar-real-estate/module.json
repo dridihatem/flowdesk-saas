@@ -1,0 +1,53 @@
+{
+    "slug": "qatar-real-estate",
+    "name": "Qatar Real Estate Suite",
+    "type": "bundle",
+    "version": "1.0.0",
+    "description": "All-in-one real estate pack: property listings, viewings, and broker commissions in one install.",
+    "author": "FlowDesk",
+    "nav": { "icon": "projects" },
+    "pages": [
+        { "slug": "", "label_key": "nav_overview" },
+        { "slug": "listings", "label_key": "nav_listings" },
+        { "slug": "viewings", "label_key": "nav_viewings" },
+        { "slug": "commissions", "label_key": "nav_commissions" }
+    ],
+    "includes_modules": [
+        { "slug": "qatar-property-listings", "name": "Property Listings", "required": true, "paid": false, "standalone_zip": true },
+        { "slug": "qatar-property-viewings", "name": "Property Viewings", "required": true, "paid": false, "standalone_zip": true },
+        { "slug": "qatar-broker-commissions", "name": "Broker Commissions", "required": true, "paid": false, "standalone_zip": true }
+    ],
+    "related_modules": [
+        { "slug": "qatar-vat-helper", "name": "Qatar VAT Helper", "required": false, "paid": true, "price_hint": "Marketplace" },
+        { "slug": "qatar-appointments", "name": "Appointments", "required": false, "paid": false }
+    ],
+    "integrations": {
+        "clients": true,
+        "projects": true,
+        "invoices": true,
+        "payments": false,
+        "calendar": true,
+        "proposals": true,
+        "forms": true,
+        "providers": true,
+        "tickets": false
+    },
+    "requires": {
+        "plan_features": ["modules"],
+        "integrations": ["clients"]
+    },
+    "ai": {
+        "modes": ["summary", "client_email", "project_description"],
+        "label": "Nova drafts listing summaries, viewing emails, and deal notes."
+    },
+    "locales": {
+        "en": {
+            "name": "Qatar Real Estate Suite",
+            "description": "Listings, viewings, and commissions — one module for Doha agencies."
+        },
+        "fr": {
+            "name": "Pack immobilier Qatar",
+            "description": "Annonces, visites et commissions — un seul module pour les agences."
+        }
+    }
+}

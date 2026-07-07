@@ -3,6 +3,7 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: 'class',
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -12,7 +13,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', 'var(--flow-font-sans)', ...defaultTheme.fontFamily.sans],
+                /* Single-name fallback inside var() so missing --flow-font-sans never invalidates the rule */
+                sans: ['var(--flow-font-sans, ui-sans-serif)', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 flow: {
@@ -28,6 +30,9 @@ export default {
             },
             borderRadius: {
                 flow: 'var(--flow-radius-lg)',
+            },
+            maxWidth: {
+                '12xl': '96rem',
             },
         },
     },

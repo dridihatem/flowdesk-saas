@@ -1,0 +1,42 @@
+@props(['name'])
+@php
+    $map = [
+        'dashboard' => 'fa-solid fa-chart-pie',
+        'clients' => 'fa-solid fa-users',
+        'projects' => 'fa-solid fa-folder-open',
+        'inquiries' => 'fa-solid fa-inbox',
+        'proposals' => 'fa-solid fa-file-lines',
+        'invoices' => 'fa-solid fa-file-invoice-dollar',
+        'billing' => 'fa-solid fa-credit-card',
+        'provider' => 'fa-solid fa-handshake',
+        'analytics' => 'fa-solid fa-chart-column',
+        'providers' => 'fa-solid fa-user-group',
+        'forms' => 'fa-solid fa-table-list',
+        'activity' => 'fa-solid fa-clock-rotate-left',
+        'messages' => 'fa-solid fa-comments',
+        'tickets' => 'fa-solid fa-ticket',
+        'ai' => 'fa-solid fa-wand-magic-sparkles',
+        'team' => 'fa-solid fa-people-group',
+        'widgets' => 'fa-solid fa-table-columns',
+        'appearance' => 'fa-solid fa-palette',
+        'branding' => 'fa-solid fa-paintbrush',
+        'currency' => 'fa-solid fa-coins',
+        'commission' => 'fa-solid fa-percent',
+        'embed' => 'fa-solid fa-code',
+        'smtp' => 'fa-solid fa-envelope',
+        'calendar' => 'fa-solid fa-calendar-days',
+        'documents' => 'fa-solid fa-file-contract',
+        'security' => 'fa-solid fa-shield-halved',
+        'two-factor' => 'fa-solid fa-key',
+        'settings' => 'fa-solid fa-gear',
+        'profile' => 'fa-solid fa-user',
+        'contact' => 'fa-solid fa-address-card',
+        'marketing' => 'fa-solid fa-bullhorn',
+        'email-marketing' => 'fa-solid fa-envelope-open-text',
+        'integrations' => 'fa-solid fa-plug',
+        'modules' => 'fa-solid fa-puzzle-piece',
+        'navigation' => 'fa-solid fa-bars-staggered',
+    ];
+    $fa = $map[$name] ?? 'fa-solid fa-circle';
+@endphp
+<i {{ $attributes->class([$fa, 'fa-fw shrink-0 text-[0.95rem]']) }} aria-hidden="true"></i>

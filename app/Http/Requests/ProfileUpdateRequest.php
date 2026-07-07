@@ -9,6 +9,13 @@ use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('default_currency') === '') {
+            $this->merge(['default_currency' => null]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -19,6 +26,7 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'locale' => ['nullable', 'string', Rule::in(config('flowdesk.locales', ['en']))],
+            'default_currency' => ['nullable', 'string', 'size:3', flowdesk_currency_rule()],
             'email' => [
                 'required',
                 'string',

@@ -20,17 +20,42 @@ class EnsureUserBelongsToTenant
             : null;
 
         if (! $current instanceof Company) {
+            // ResolveTenant runs before the session starts, so its fallback to the
+            // signed-in user's company never applies. Bind it here (post-auth) so
+            // TenantScope stays active on hosts without a tenant subdomain.
+            if ($request->user()->company instanceof Company) {
+                app()->instance('currentCompany', $request->user()->company);
+            }
+
             return $next($request);
         }
 
-        if ($request->user()->company_id === null) {
-            abort(403);
+        $user = $request->user();
+
+        if (! $current->is_enabled && ! $user->hasRole('platform_admin')) {
+            abort(403, __('This workspace is disabled. Please contact support.'));
         }
 
-        if ((string) $request->user()->company_id !== (string) $current->id) {
-            abort(403);
+        if ($user->company_id === null) {
+            abort(403, __('This workspace URL is for a specific company. Sign in with a workspace team account, or open the main site.'));
         }
 
-        return $next($request);
+        if ((string) $user->company_id === (string) $current->id) {
+            return $next($request);
+        }
+
+        $company = $user->company;
+
+        if ($company instanceof Company) {
+            $target = flowdesk_tenant_url($company, $request->getRequestUri());
+            $targetHost = parse_url($target, PHP_URL_HOST);
+
+            if ($targetHost && $targetHost !== $request->getHost()) {
+                return redirect()->away($target)
+                    ->with('tenant_switch_notice', __('You are signed in to a different workspace. We opened your company URL.'));
+            }
+        }
+
+        abort(403, __('You do not have access to this workspace.'));
     }
 }

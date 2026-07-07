@@ -1,0 +1,10 @@
+{
+    "slug": "hello-crm",
+    "name": "Hello CRM Module",
+    "version": "1.0.0",
+    "description": "Example module — replace with your own CRM extension.",
+    "author": "Flowqil",
+    "nav": {
+        "icon": "modules"
+    }
+}

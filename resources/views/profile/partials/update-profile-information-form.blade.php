@@ -27,10 +27,27 @@
             <x-input-label for="locale" :value="__('Language')" />
             <select id="locale" name="locale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
                 @foreach (config('flowdesk.locales', ['en']) as $loc)
-                    <option value="{{ $loc }}" @selected(old('locale', $user->locale ?? app()->getLocale()) === $loc)>{{ strtoupper($loc) }}</option>
+                    <option value="{{ $loc }}" @selected(old('locale', $user->locale ?? app()->getLocale()) === $loc)>{{ flowdesk_locale_name($loc) }}</option>
                 @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('locale')" />
+        </div>
+
+        <div>
+            <x-input-label for="default_currency" :value="__('Default currency (personal)')" />
+            <select id="default_currency" name="default_currency" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
+                <option value="">{{ __('Use workspace default') }}</option>
+                @foreach (flowdesk_currency_select_options($user->default_currency) as $code => $label)
+                    <option value="{{ $code }}" @selected(old('default_currency', $user->default_currency) === $code)>{{ $label }}</option>
+                @endforeach
+            </select>
+            <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                {{ __('Applied to new tasks when you do not pick a currency. Workspace default is set in settings.') }}
+                @if (Route::has('settings.workspace-currency'))
+                    <a href="{{ route('settings.workspace-currency') }}" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">{{ __('Workspace currency settings') }}</a>
+                @endif
+            </p>
+            <x-input-error class="mt-2" :messages="$errors->get('default_currency')" />
         </div>
 
         <div>

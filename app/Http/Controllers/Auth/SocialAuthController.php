@@ -7,6 +7,7 @@ use App\Models\SocialAccount;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
@@ -46,18 +47,15 @@ class SocialAuthController extends Controller
             ->first();
 
         if ($existingAccount) {
-            Auth::login($existingAccount->user);
-
-            return redirect()->intended(route('dashboard', absolute: false));
+            return $this->completeLogin($existingAccount->user);
         }
 
         $userByEmail = User::query()->where('email', $email)->first();
 
         if ($userByEmail) {
             $this->attachAccount($userByEmail, $driver, $socialUser);
-            Auth::login($userByEmail);
 
-            return redirect()->intended(route('dashboard', absolute: false));
+            return $this->completeLogin($userByEmail);
         }
 
         session([
@@ -74,6 +72,22 @@ class SocialAuthController extends Controller
         ]);
 
         return redirect()->route('oauth.company.create');
+    }
+
+    private function completeLogin(User $user): RedirectResponse
+    {
+        Auth::login($user);
+
+        if ($user->hasTwoFactorEnabled()) {
+            Auth::logout();
+            request()->session()->put('login.id', $user->id);
+            request()->session()->put('login.remember', false);
+            request()->session()->regenerate();
+
+            return redirect()->route('two-factor.login');
+        }
+
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     private function attachAccount(User $user, string $driver, SocialiteUser $socialUser): void

@@ -1,0 +1,18 @@
+{
+    "listing_saved": "تم حفظ الإعلان.",
+    "add_listing": "إضافة إعلان",
+    "zone": "المنطقة",
+    "owner_client": "العميل المالك",
+    "linked_project": "المشروع المرتبط",
+    "price_qar": "السعر (ريال قطري)",
+    "area_sqm": "المساحة م²",
+    "semi_furnished": "نصف مفروش",
+    "unfurnished": "غير مفروش",
+    "save_listing": "حفظ الإعلان",
+    "portfolio_summary": "ملخص المحفظة",
+    "viewing_email": "بريد معاينة",
+    "listings": "الإعلانات",
+    "no_listings": "لا توجد إعلانات بعد.",
+    "qar_column": "ريال",
+    "title_placeholder": "غرفتان مفروشتان — اللؤلؤة"
+}

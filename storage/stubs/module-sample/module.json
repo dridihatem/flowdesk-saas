@@ -1,0 +1,20 @@
+{
+    "slug": "quick-notes",
+    "name": "Quick Notes",
+    "version": "1.0.0",
+    "description": "Bloc-notes simple pour l'équipe — exemple de module CRM installable en .zip.",
+    "author": "Flowqil Demo",
+    "nav": {
+        "icon": "documents"
+    },
+    "locales": {
+        "en": {
+            "name": "Quick Notes",
+            "description": "Simple team notepad — sample installable CRM module."
+        },
+        "fr": {
+            "name": "Notes rapides",
+            "description": "Bloc-notes simple pour l'équipe — exemple de module CRM installable."
+        }
+    }
+}

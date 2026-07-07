@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Company;
+use App\Models\Plan;
+use App\Models\PlanLimit;
+use App\Models\Subscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -46,7 +50,60 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function seedPaidPremiumTtsForCompany(Company $company, int $aiCredits = 10000): Plan
 {
-    // ..
+    $plan = Plan::factory()->create(['price_monthly' => 79]);
+
+    foreach ([
+        ['feature_key' => 'premium_tts', 'limit_value' => 1],
+        ['feature_key' => 'ai_credits', 'limit_value' => $aiCredits],
+    ] as $row) {
+        PlanLimit::query()->create([
+            'plan_id' => $plan->id,
+            'feature_key' => $row['feature_key'],
+            'limit_value' => $row['limit_value'],
+        ]);
+    }
+
+    Subscription::factory()->create([
+        'company_id' => $company->id,
+        'plan_id' => $plan->id,
+        'status' => 'active',
+    ]);
+
+    return $plan;
+}
+
+function seedWorkspaceAiAgentPlan(Company $company): Plan
+{
+    $plan = Plan::factory()->create(['price_monthly' => 99]);
+
+    PlanLimit::query()->create([
+        'plan_id' => $plan->id,
+        'feature_key' => 'workspace_ai_agent',
+        'limit_value' => 1,
+    ]);
+
+    Subscription::factory()->create([
+        'company_id' => $company->id,
+        'plan_id' => $plan->id,
+        'status' => 'active',
+    ]);
+
+    return $plan;
+}
+
+/**
+ * @return array{_captcha_token: string, _captcha_answer: int}
+ */
+function validMathCaptchaFields(string $context): array
+{
+    $captcha = app(\App\Services\MathCaptchaService::class)->generate($context);
+    $decoded = base64_decode($captcha['token'], true);
+    [$answer] = explode('|', (string) $decoded);
+
+    return [
+        '_captcha_token' => $captcha['token'],
+        '_captcha_answer' => (int) $answer,
+    ];
 }

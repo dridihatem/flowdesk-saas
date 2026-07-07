@@ -1,0 +1,17 @@
+{
+    "slug": "qatar-cod-reconciliation",
+    "name": "COD Reconciliation (Qatar)",
+    "version": "1.0.0",
+    "description": "Track cash-on-delivery collected by couriers and reconcile with payments.",
+    "author": "FlowDesk",
+    "nav": { "icon": "payments" },
+    "integrations": {
+        "clients": false,
+        "payments": true,
+        "invoices": true
+    },
+    "ai": {
+        "modes": [],
+        "label": "No Nova — numeric reconciliation only."
+    }
+}

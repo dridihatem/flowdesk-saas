@@ -11,22 +11,33 @@ test('login screen can be rendered', function () {
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
 
-    $response = $this->post('/login', [
+    $response = $this->post('/login', array_merge([
         'email' => $user->email,
         'password' => 'password',
-    ]);
+    ], validMathCaptchaFields('auth-login')));
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
-test('users can not authenticate with invalid password', function () {
+test('login rejects missing captcha', function () {
     $user = User::factory()->create();
 
     $this->post('/login', [
         'email' => $user->email,
-        'password' => 'wrong-password',
+        'password' => 'password',
     ]);
+
+    $this->assertGuest();
+});
+
+test('users can not authenticate with invalid password', function () {
+    $user = User::factory()->create();
+
+    $this->post('/login', array_merge([
+        'email' => $user->email,
+        'password' => 'wrong-password',
+    ], validMathCaptchaFields('auth-login')));
 
     $this->assertGuest();
 });

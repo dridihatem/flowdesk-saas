@@ -1,0 +1,17 @@
+{
+    "slug": "qatar-delivery-dispatch",
+    "name": "Delivery Dispatch (Qatar)",
+    "version": "1.0.0",
+    "description": "Last-mile delivery stops, couriers and Doha zones — links to orders and clients.",
+    "author": "FlowDesk",
+    "nav": { "icon": "projects" },
+    "integrations": {
+        "clients": true,
+        "projects": true,
+        "payments": true
+    },
+    "ai": {
+        "modes": ["summary"],
+        "label": "Nova summarizes daily delivery performance."
+    }
+}

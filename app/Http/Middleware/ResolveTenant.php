@@ -11,24 +11,27 @@ class ResolveTenant
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $company = null;
+
         if ($this->isCentralHost($request->getHost())) {
-            app()->instance('currentCompany', null);
+            $company = null;
+        } else {
+            $subdomain = $this->extractSubdomain($request->getHost(), config('flowdesk.tenant_base_domain'));
 
-            return $next($request);
+            if ($subdomain === null || $subdomain === '' || $subdomain === 'www') {
+                $company = null;
+            } else {
+                $resolved = Company::query()->where('subdomain', $subdomain)->first();
+                if (! $resolved) {
+                    abort(404, __('Tenant not found.'));
+                }
+                $company = $resolved;
+            }
         }
 
-        $subdomain = $this->extractSubdomain($request->getHost(), config('flowdesk.tenant_base_domain'));
-
-        if ($subdomain === null || $subdomain === '' || $subdomain === 'www') {
-            app()->instance('currentCompany', null);
-
-            return $next($request);
-        }
-
-        $company = Company::query()->where('subdomain', $subdomain)->first();
-
-        if (! $company) {
-            abort(404, __('Tenant not found.'));
+        // Host without tenant (localhost, central app, etc.): scope models to the signed-in workspace so route binding and queries stay consistent.
+        if (! $company instanceof Company && $request->user()?->company instanceof Company) {
+            $company = $request->user()->company;
         }
 
         app()->instance('currentCompany', $company);

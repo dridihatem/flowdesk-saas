@@ -1,0 +1,10 @@
+{
+    "quick_notes_title": "Notes rapides",
+    "quick_notes_help": "Démo : les notes sont stockées dans votre navigateur (localStorage). Ajoutez une migration dans database/migrations/ pour une vraie table.",
+    "note_placeholder": "Écrire une note puis Entrée…",
+    "add_note": "Ajouter",
+    "no_notes": "Aucune note pour le moment.",
+    "extra_pages_title": "Pages supplémentaires",
+    "extra_pages_help": "Chaque fichier Blade dans views/ devient une page : views/about.blade.php → /modules/:slug/about",
+    "view_about": "Voir la page « about »"
+}

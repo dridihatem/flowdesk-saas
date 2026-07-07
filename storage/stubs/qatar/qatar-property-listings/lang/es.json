@@ -1,0 +1,18 @@
+{
+    "listing_saved": "Anuncio guardado.",
+    "add_listing": "Añadir anuncio",
+    "zone": "Zona",
+    "owner_client": "Cliente propietario",
+    "linked_project": "Proyecto vinculado",
+    "price_qar": "Precio (QAR)",
+    "area_sqm": "Superficie m²",
+    "semi_furnished": "Semi amueblado",
+    "unfurnished": "Sin amueblar",
+    "save_listing": "Guardar anuncio",
+    "portfolio_summary": "Resumen de cartera",
+    "viewing_email": "Correo de visita",
+    "listings": "Anuncios",
+    "no_listings": "Aún no hay anuncios.",
+    "qar_column": "QAR",
+    "title_placeholder": "2 hab. amueblado — The Pearl"
+}

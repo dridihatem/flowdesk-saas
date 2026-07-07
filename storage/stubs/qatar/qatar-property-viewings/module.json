@@ -1,0 +1,28 @@
+{
+    "slug": "qatar-property-viewings",
+    "name": "Property Viewings (Qatar)",
+    "version": "1.0.0",
+    "description": "Schedule and track property viewings with calendar and client portal links.",
+    "author": "FlowDesk",
+    "nav": { "icon": "calendar" },
+    "integrations": {
+        "clients": true,
+        "projects": false,
+        "invoices": false,
+        "calendar": true,
+        "forms": true,
+        "providers": false
+    },
+    "ai": {
+        "modes": ["client_email", "summary"],
+        "label": "Nova drafts viewing confirmations and follow-up emails."
+    },
+    "part_of_bundle": {
+        "slug": "qatar-real-estate",
+        "name": "Qatar Real Estate Suite"
+    },
+    "related_modules": [
+        { "slug": "qatar-real-estate", "name": "Qatar Real Estate Suite (full pack)", "required": false, "paid": false, "included": true },
+        { "slug": "qatar-property-listings", "name": "Property Listings", "required": false, "paid": false }
+    ]
+}

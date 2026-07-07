@@ -1,0 +1,18 @@
+{
+    "listing_saved": "Listing saved.",
+    "add_listing": "Add listing",
+    "zone": "Zone",
+    "owner_client": "Owner client",
+    "linked_project": "Linked project",
+    "price_qar": "Price (QAR)",
+    "area_sqm": "Area m²",
+    "semi_furnished": "Semi-furnished",
+    "unfurnished": "Unfurnished",
+    "save_listing": "Save listing",
+    "portfolio_summary": "Portfolio summary",
+    "viewing_email": "Viewing email",
+    "listings": "Listings",
+    "no_listings": "No listings yet.",
+    "qar_column": "QAR",
+    "title_placeholder": "2BR furnished — The Pearl"
+}

@@ -1,0 +1,17 @@
+{
+    "slug": "qatar-vat-helper",
+    "name": "VAT 5% Helper (Qatar)",
+    "version": "1.0.0",
+    "description": "Calculate Qatar VAT at 5%, net/gross amounts and quarterly export hints — links to invoices.",
+    "author": "FlowDesk",
+    "nav": { "icon": "invoices" },
+    "integrations": {
+        "clients": false,
+        "invoices": true,
+        "payments": true
+    },
+    "ai": {
+        "modes": [],
+        "label": "No Nova — pure calculator and invoice links."
+    }
+}

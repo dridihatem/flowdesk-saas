@@ -46,6 +46,16 @@ class UserFactory extends Factory
         ]);
     }
 
+    /** Platform operator (central /admin, no tenant company). */
+    public function platformAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'company_id' => null,
+        ])->afterCreating(function (User $user): void {
+            $user->syncRoles(['platform_admin']);
+        });
+    }
+
     public function configure(): static
     {
         return $this->afterCreating(function (User $user): void {

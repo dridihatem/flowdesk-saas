@@ -1,0 +1,18 @@
+{
+    "slug": "qatar-catalog-lite",
+    "name": "Catalog Lite (Qatar)",
+    "version": "1.0.0",
+    "description": "Simple product catalog with SKU, QAR pricing and stock — links to clients and invoices.",
+    "author": "FlowDesk",
+    "nav": { "icon": "documents" },
+    "integrations": {
+        "clients": true,
+        "projects": true,
+        "invoices": true,
+        "forms": true
+    },
+    "ai": {
+        "modes": ["summary", "project_description"],
+        "label": "Nova writes product descriptions and catalog summaries."
+    }
+}

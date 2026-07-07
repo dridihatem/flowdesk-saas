@@ -1,0 +1,54 @@
+{
+    "slug": "qatar-property-listings",
+    "name": "Property Listings (Qatar)",
+    "version": "1.0.0",
+    "description": "Sale and rental listings in QAR with Doha zones, linked to FlowDesk clients, projects and invoices.",
+    "author": "FlowDesk",
+    "nav": { "icon": "projects" },
+    "integrations": {
+        "clients": true,
+        "projects": true,
+        "invoices": true,
+        "payments": false,
+        "calendar": true,
+        "proposals": true,
+        "forms": true,
+        "providers": true,
+        "tickets": false
+    },
+    "requires": {
+        "plan_features": ["modules"],
+        "integrations": ["clients"]
+    },
+    "ai": {
+        "modes": ["summary", "client_email", "project_description"],
+        "label": "Nova drafts listing summaries and client viewing emails."
+    },
+    "part_of_bundle": {
+        "slug": "qatar-real-estate",
+        "name": "Qatar Real Estate Suite"
+    },
+    "related_modules": [
+        { "slug": "qatar-real-estate", "name": "Qatar Real Estate Suite (full pack)", "required": false, "paid": false, "included": true },
+        { "slug": "qatar-property-viewings", "name": "Property Viewings", "required": false, "paid": false },
+        { "slug": "qatar-broker-commissions", "name": "Broker Commissions", "required": false, "paid": false }
+    ],
+    "locales": {
+        "en": {
+            "name": "Property Listings (Qatar)",
+            "description": "Sale and rental listings in QAR with Doha zones, linked to FlowDesk clients, projects and invoices."
+        },
+        "fr": {
+            "name": "Annonces immobilières (Qatar)",
+            "description": "Biens à vendre ou à louer en QAR avec zones de Doha, liés aux clients, projets et factures FlowDesk."
+        },
+        "es": {
+            "name": "Anuncios inmobiliarios (Catar)",
+            "description": "Anuncios de venta y alquiler en QAR con zonas de Doha, vinculados a clientes, proyectos y facturas."
+        },
+        "ar": {
+            "name": "إعلانات عقارية (قطر)",
+            "description": "إعلانات بيع وإيجار بالريال القطري مع مناطق الدوحة، مرتبطة بالعملاء والمشاريع والفواتير."
+        }
+    }
+}

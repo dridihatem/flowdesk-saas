@@ -13,10 +13,16 @@
         </div>
 
         <div class="mt-4">
-            <x-input-label for="country" :value="__('Country (optional, ISO-2)')" />
-            <x-text-input id="country" class="block mt-1 w-full uppercase" type="text" name="country" maxlength="2" :value="old('country')" placeholder="TN, US, FR…" autocomplete="country" />
+            <x-input-label for="country" :value="__('Country')" />
+            @include('auth.partials.country-select', ['countries' => $countries, 'id' => 'country', 'name' => 'country', 'value' => old('country')])
             <x-input-error :messages="$errors->get('country')" class="mt-2" />
         </div>
+
+        <div class="mt-4">
+            @include('auth.partials.vat-percent-field')
+        </div>
+
+        @include('auth.partials.company-profile-fields', ['countries' => $countries, 'dialCodes' => $dialCodes])
 
         <div class="flex items-center justify-end mt-6">
             <x-primary-button>
@@ -24,4 +30,6 @@
             </x-primary-button>
         </div>
     </form>
+
+    @include('auth.partials.country-registration-data')
 </x-guest-layout>

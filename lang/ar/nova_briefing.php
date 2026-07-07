@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'phrases' => [
+        'اعطني تحليلا كاملا',
+        'تحليل كامل',
+        'ملخص نشاطي',
+        'اخبرني بكل شيء',
+        'complete analysis',
+        'full briefing',
+    ],
+
+    'guest' => 'عزيزي',
+    'intro' => 'مرحباً :name. إليك تحليلك الكامل لـ :company.',
+    'revenue_no_compare' => 'إيرادات هذا الشهر: :amount.',
+    'revenue_up' => 'إيرادات هذا الشهر: :amount، بزيادة :percent٪ عن الشهر الماضي.',
+    'revenue_down' => 'إيرادات هذا الشهر: :amount، بانخفاض :percent٪ عن الشهر الماضي.',
+    'revenue_none' => 'لا توجد مدفوعات مسجلة هذا الشهر بعد.',
+    'clients_projects' => 'لديك :clients عميل و :projects مشروع نشط.',
+    'pending_projects' => ':count مشروع(ات) قيد الانتظار: :titles.',
+    'stale_projects' => ':count مشروع(ات) نشط(ة) لم تُحدَّث منذ أكثر من أسبوعين.',
+    'unpaid_invoices' => ':count فاتورة(ات) غير مدفوعة، بإجمالي :amount.',
+    'overdue_invoices' => 'تنبيه: :count فاتورة(ات) متأخرة.',
+    'invoices_clear' => 'لا توجد فواتير غير مدفوعة. ممتاز.',
+    'tasks_open' => ':count مهمة(ات) مفتوحة في مشاريعك.',
+    'tasks_overdue' => ':open مهمة(ات) مفتوحة، منها :overdue متأخرة.',
+    'events_intro' => 'الأحداث القادمة هذا الأسبوع:',
+    'event_item' => ':title، :date',
+    'events_none' => 'لا توجد أحداث مجدولة خلال الأيام السبعة القادمة.',
+    'inquiries_open' => ':count استفسار(ات) جديد(ة) أو قيد المعالجة.',
+    'tickets_open' => ':count تذكرة(ات) دعم مفتوحة.',
+    'outro' => 'انتهى تحليلك. قل Nova لإجراء آخر.',
+    'today' => 'اليوم',
+    'tomorrow' => 'غداً',
+];
