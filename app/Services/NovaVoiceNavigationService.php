@@ -228,6 +228,7 @@ class NovaVoiceNavigationService
             'enabled' => (bool) ($gates['ai_credits'] ?? false),
             'brand' => $brand,
             'userName' => $firstName,
+            'userId' => (string) $user->id,
             'companyName' => $companyName,
             'voiceCreditCost' => $voiceCredits,
             'briefingCreditCost' => $briefingCredits,
@@ -249,6 +250,10 @@ class NovaVoiceNavigationService
                 'wakeReply' => __('nova_voice_wake_reply', [
                     'name' => $firstName !== '' ? $firstName : __('nova_voice_guest'),
                 ]),
+                'wakeReplyHello' => __('nova_voice_wake_reply_hello', [
+                    'name' => $firstName !== '' ? $firstName : __('nova_voice_guest'),
+                ]),
+                'wakeReplyListening' => __('nova_voice_wake_reply_listening'),
                 'identityReply' => $this->identity->reply($user->company, $user),
                 'wakeTooltip' => __('nova_voice_wake_tooltip', [
                     'name' => $firstName !== '' ? $firstName : __('nova_voice_guest'),

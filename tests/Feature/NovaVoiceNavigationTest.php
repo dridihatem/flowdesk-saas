@@ -9,6 +9,17 @@ beforeEach(function () {
     $this->seed(RoleSeeder::class);
 });
 
+test('nova voice nav config includes wake reply hello and listening labels', function () {
+    $user = User::factory()->create(['name' => 'Jane Doe']);
+    $gates = array_fill_keys(PlanLimitService::FEATURE_KEYS, true);
+
+    $config = app(NovaVoiceNavigationService::class)->clientConfig($user, $gates);
+
+    expect($config['userId'])->toBe((string) $user->id);
+    expect($config['labels']['wakeReplyHello'])->toBe(__('nova_voice_wake_reply_hello', ['name' => 'Jane']));
+    expect($config['labels']['wakeReplyListening'])->toBe(__('nova_voice_wake_reply_listening'));
+});
+
 test('nova voice nav config includes invoice commands for authorized user', function () {
     $user = User::factory()->create();
     $gates = array_fill_keys(PlanLimitService::FEATURE_KEYS, true);

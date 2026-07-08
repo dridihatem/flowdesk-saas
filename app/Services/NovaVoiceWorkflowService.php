@@ -196,11 +196,27 @@ class NovaVoiceWorkflowService
             $data['create_portal'] = $portal;
         }
 
-        if (empty($data['name']) && ! NovaVoiceInputParser::extractEmail($input) && ! NovaVoiceInputParser::extractPhone($input)) {
-            $plain = trim($input);
-            if (mb_strlen($plain) >= 2 && NovaVoiceInputParser::parseYesNo($plain) === null) {
-                $data['name'] = $plain;
+        if (empty($data['name']) && ! NovaVoiceInputParser::looksLikeMultiFieldInput($input)) {
+            $plainName = NovaVoiceInputParser::parseNameField($input);
+            if ($plainName) {
+                $data['name'] = $plainName;
             }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function mergeNameField(array $data, string $input): array
+    {
+        $name = NovaVoiceInputParser::parseNameField($input)
+            ?? NovaVoiceInputParser::extractName($input);
+
+        if ($name) {
+            $data['name'] = $name;
         }
 
         return $data;
@@ -213,7 +229,7 @@ class NovaVoiceWorkflowService
     private function applyClientStep(string $step, array $data, string $input): array
     {
         return match ($step) {
-            'collect_name' => array_merge($data, ['name' => trim($input)]),
+            'collect_name' => $this->mergeNameField($data, $input),
             'collect_email' => array_merge($data, ['email' => $this->optionalContactValue($input, true)]),
             'collect_phone' => array_merge($data, ['phone' => $this->optionalContactValue($input, false)]),
             'collect_portal' => array_merge($data, ['create_portal' => NovaVoiceInputParser::parseYesNo($input) ?? false]),
@@ -692,7 +708,7 @@ class NovaVoiceWorkflowService
         }
 
         if ($email) {
-            return NovaVoiceInputParser::extractEmail($input) ?? trim($input);
+            return NovaVoiceInputParser::extractEmail($input);
         }
 
         return NovaVoiceInputParser::extractPhone($input) ?? trim($input);

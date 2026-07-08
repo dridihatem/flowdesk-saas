@@ -26,7 +26,7 @@ import {
     shouldExecuteCommand,
     stripWakeFromText,
 } from './nova-voice-matching';
-import { speakNovaVoiceLine } from './nova-voice-speak';
+import { speakNovaVoiceLine, flowdeskNovaMarkWakeGreeted, flowdeskNovaResolveWakeReply, flowdeskNovaWakeReplyStorageKey } from './nova-voice-speak';
 import {
     flowdeskPlayNovaBriefing,
     flowdeskPrefetchNovaSpeech,
@@ -40,6 +40,7 @@ export function registerNovaVoiceNav(Alpine) {
         enabled: Boolean(cfg.enabled),
         brand: cfg.brand || 'Nova',
         userName: cfg.userName || '',
+        userId: cfg.userId || '',
         companyName: cfg.companyName || '',
         voiceCreditCost: cfg.voiceCreditCost || 0,
         appLocale: cfg.appLocale || 'en',
@@ -90,8 +91,11 @@ export function registerNovaVoiceNav(Alpine) {
         _csrf: '',
         _lastHandledKey: '',
         _lastHandledAt: 0,
-        _wakePrefetchStarted: false,
+        _wakePrefetchHelloStarted: false,
+        _wakePrefetchListeningStarted: false,
         _identityPrefetchStarted: false,
+        _lastWakeSpokenAt: 0,
+        wakeReplyStorageKey: '',
         _chatLoading: false,
         _workflowActive: false,
         _workflowLoading: false,
@@ -122,6 +126,7 @@ export function registerNovaVoiceNav(Alpine) {
             this.startListeningPhrases = flowdeskNovaStartListeningPhrases(this.brand, this.appLocale);
             this.identityPhrases = flowdeskNovaIdentityPhrases(this.appLocale);
             this.creditsHint = this.labels.creditsHint || '';
+            this.wakeReplyStorageKey = flowdeskNovaWakeReplyStorageKey(this.userId || this.userName);
             this.supported = true;
             this.status = this.labels.alwaysOn || this.labels.wake || '';
             this._audioEl = typeof Audio !== 'undefined' ? new Audio() : null;
@@ -154,6 +159,13 @@ export function registerNovaVoiceNav(Alpine) {
                 if (this._speaking || this.voiceActionsMuted()) {
                     if (flowdeskMatchesStopPhrase(heard, this.stopPhrases)) {
                         this.stopNovaResponse();
+                    }
+                    const wakeOnlyFinal = isFinal
+                        && flowdeskMatchesWakePhrase(heard, this.wakePhrases)
+                        && !stripWakeFromText(heard, this.wakePhrases);
+                    if (wakeOnlyFinal && !this._listeningPaused && !this._workflowActive) {
+                        this.heard = heard;
+                        this.handleWakeOnly();
                     }
                     return;
                 }
@@ -324,7 +336,8 @@ export function registerNovaVoiceNav(Alpine) {
         },
 
         prefetchVoiceLines() {
-            this.prefetchSpeechLine(this.labels.wakeReply, '_wakePrefetchStarted');
+            this.prefetchSpeechLine(this.labels.wakeReplyHello, '_wakePrefetchHelloStarted');
+            this.prefetchSpeechLine(this.labels.wakeReplyListening, '_wakePrefetchListeningStarted');
             this.prefetchSpeechLine(this.labels.identityReply, '_identityPrefetchStarted');
         },
 
@@ -387,6 +400,15 @@ export function registerNovaVoiceNav(Alpine) {
                 return;
             }
 
+            const hasWake = flowdeskMatchesWakePhrase(raw, this.wakePhrases);
+            const afterWake = hasWake ? stripWakeFromText(raw, this.wakePhrases) : '';
+
+            if (hasWake && !afterWake && isFinal && !this._listeningPaused && !this._workflowActive) {
+                if (this.handleWakeOnly()) {
+                    return;
+                }
+            }
+
             if (isFinal && this.matchesIdentityQuestion(raw)) {
                 this.speakIdentityReply();
                 return;
@@ -406,15 +428,13 @@ export function registerNovaVoiceNav(Alpine) {
                 return;
             }
 
-            const hasWake = flowdeskMatchesWakePhrase(raw, this.wakePhrases);
             const inCommandWindow = this.commandMode && Date.now() < this.commandModeUntil;
 
-            if (hasWake && !inCommandWindow) {
+            if (hasWake) {
                 this.commandMode = true;
                 this.commandModeUntil = Date.now() + 20000;
                 this.status = this.labels.chatListening || this.labels.listening || '';
 
-                const afterWake = stripWakeFromText(raw, this.wakePhrases);
                 if (afterWake && this.matchesIdentityQuestion(afterWake) && isFinal) {
                     this.speakIdentityReply();
                     return;
@@ -424,10 +444,10 @@ export function registerNovaVoiceNav(Alpine) {
                     return;
                 }
 
-                if (!afterWake && !this._wakeAcked && isFinal) {
-                    this._wakeAcked = true;
-                    this.speakWakeReply();
+                if (!afterWake && !isFinal) {
+                    return;
                 }
+
                 return;
             }
 
@@ -763,13 +783,60 @@ export function registerNovaVoiceNav(Alpine) {
             }
         },
 
-        speakWakeReply() {
+        speakWakeReply(text = '') {
+            const line = String(text || '').trim();
+            if (!line) {
+                return false;
+            }
+
+            flowdeskUnlockNovaAudio();
+
             return speakNovaVoiceLine(this, {
-                text: this.labels.wakeReply,
+                text: line,
                 status: this.labels.chatListening || this.labels.listening || '',
                 muteMs: 6000,
                 afterMuteMs: 2500,
             });
+        },
+
+        handleWakeOnly() {
+            const now = Date.now();
+            if (now - this._lastWakeSpokenAt < 1200) {
+                return true;
+            }
+
+            const { text, firstTime } = flowdeskNovaResolveWakeReply({
+                storageKey: this.wakeReplyStorageKey,
+                hello: this.labels.wakeReplyHello,
+                listening: this.labels.wakeReplyListening,
+                legacy: this.labels.wakeReply,
+            });
+
+            if (!text) {
+                return false;
+            }
+
+            if (firstTime) {
+                flowdeskNovaMarkWakeGreeted(this.wakeReplyStorageKey);
+            }
+
+            this._lastWakeSpokenAt = now;
+            this._wakeAcked = true;
+            this.commandMode = true;
+            this.commandModeUntil = now + 20000;
+            this.status = this.labels.chatListening || this.labels.listening || '';
+
+            if (this.labels.wakeTooltip) {
+                this.wakeTooltipText = this.labels.wakeTooltip;
+                this.showWakeTooltip = true;
+                window.setTimeout(() => {
+                    this.showWakeTooltip = false;
+                }, 6000);
+            }
+
+            this.speakWakeReply(text);
+
+            return true;
         },
 
         speakNotListening() {

@@ -1,5 +1,51 @@
 import { flowdeskSpeakNovaText } from './flowdesk-nova-speech';
 
+const WAKE_GREETED_PREFIX = 'flowdesk_nova_wake_greeted:';
+
+export function flowdeskNovaWakeReplyStorageKey(userId = '') {
+    const id = String(userId || '').trim();
+
+    return `${WAKE_GREETED_PREFIX}${id || 'guest'}`;
+}
+
+export function flowdeskNovaHasWakeGreeted(storageKey) {
+    if (!storageKey || typeof window === 'undefined') {
+        return false;
+    }
+
+    try {
+        return window.sessionStorage.getItem(storageKey) === '1';
+    } catch {
+        return false;
+    }
+}
+
+export function flowdeskNovaMarkWakeGreeted(storageKey) {
+    if (!storageKey || typeof window === 'undefined') {
+        return;
+    }
+
+    try {
+        window.sessionStorage.setItem(storageKey, '1');
+    } catch {
+        // ignore quota / privacy mode
+    }
+}
+
+/**
+ * First wake in the browser session: hello line. Later wakes: listening line.
+ */
+export function flowdeskNovaResolveWakeReply({ storageKey, hello = '', listening = '', legacy = '' } = {}) {
+    const helloText = String(hello || legacy || '').trim();
+    const listeningText = String(listening || helloText).trim();
+    const firstTime = !flowdeskNovaHasWakeGreeted(storageKey);
+
+    return {
+        text: firstTime ? helloText : listeningText,
+        firstTime,
+    };
+}
+
 /**
  * Shared TTS path for Nova top-bar voice replies.
  */

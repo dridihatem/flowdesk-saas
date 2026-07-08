@@ -15,7 +15,12 @@ import {
 import { initNovaNeuralBackground } from './nova-neural-bg';
 import { flowdeskIsolateRtlNumbers } from './flowdesk-numbers';
 import { flowdeskFetchErrorMessage, flowdeskNotifyLabels, flowdeskSanitizeNotifyMessage } from './flowdesk-notify';
-import { flowdeskSpeakNovaText, flowdeskStopNovaSpeech } from './flowdesk-nova-speech';
+import { flowdeskSpeakNovaText, flowdeskStopNovaSpeech, flowdeskUnlockNovaAudio } from './flowdesk-nova-speech';
+import {
+    flowdeskNovaMarkWakeGreeted,
+    flowdeskNovaResolveWakeReply,
+    flowdeskNovaWakeReplyStorageKey,
+} from './nova-voice-speak';
 
 export function registerNovaAssistant(Alpine) {
     const novaAssistantFactory = (cfg = {}) => ({
@@ -54,6 +59,7 @@ export function registerNovaAssistant(Alpine) {
         _chatAbort: null,
         _listenForStop: false,
         enableWakeWord: false,
+        wakeReplyStorageKey: '',
 
         get neuralEnergy() {
             if (this.speaking) {
@@ -120,6 +126,7 @@ export function registerNovaAssistant(Alpine) {
 
         init() {
             this.enableWakeWord = Boolean(cfg.enableWakeWord);
+            this.wakeReplyStorageKey = flowdeskNovaWakeReplyStorageKey(cfg.userId || '');
             this.wakePhrases = flowdeskVellisWakePhrases(this.assistantName, this.wakeBrand, this.appLocale);
             this.stopPhrases = flowdeskNovaStopPhrases(this.wakeBrand, this.appLocale);
 
@@ -369,11 +376,22 @@ export function registerNovaAssistant(Alpine) {
         },
 
         async speakWakeReply() {
-            const text = (this.labels.wakeReply || '').trim();
+            const { text, firstTime } = flowdeskNovaResolveWakeReply({
+                storageKey: this.wakeReplyStorageKey,
+                hello: this.labels.wakeReplyHello,
+                listening: this.labels.wakeReplyListening,
+                legacy: this.labels.wakeReply,
+            });
+
             if (!text) {
                 return;
             }
 
+            if (firstTime) {
+                flowdeskNovaMarkWakeGreeted(this.wakeReplyStorageKey);
+            }
+
+            flowdeskUnlockNovaAudio();
             this.state = 'responding';
             this.stopRecognition();
             this.speakingText = text;

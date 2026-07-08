@@ -18,6 +18,7 @@
         'compact' => $compact,
         'enableWakeWord' => $enableWakeWord,
         'skipWakeWord' => ! empty($flowdeskNovaVoiceNav['enabled']),
+        'userId' => (string) (auth()->id() ?? ''),
         'appLocale' => $appLocale,
         'locale' => $speechLocale,
         'labels' => [
@@ -28,6 +29,8 @@
             'speaking' => __('nova_state_speaking'),
             'wake' => __('nova_state_wake'),
             'wakeReply' => __('nova_voice_wake_reply', ['name' => trim(explode(' ', (string) auth()->user()?->name)[0] ?? '') ?: __('nova_voice_guest')]),
+            'wakeReplyHello' => __('nova_voice_wake_reply_hello', ['name' => trim(explode(' ', (string) auth()->user()?->name)[0] ?? '') ?: __('nova_voice_guest')]),
+            'wakeReplyListening' => __('nova_voice_wake_reply_listening'),
             'identityReply' => __('nova_voice_identity_reply', [
                 'name' => $brand,
                 'user' => trim(explode(' ', (string) auth()->user()?->name)[0] ?? '') ?: __('nova_voice_guest'),

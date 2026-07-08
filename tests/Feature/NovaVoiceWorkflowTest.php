@@ -78,6 +78,29 @@ test('voice workflow api creates client with portal account', function () {
     expect($client->user_id)->not->toBeNull();
 });
 
+test('voice workflow creates client from noisy french spoken input', function () {
+    $company = Company::factory()->create();
+    $user = User::factory()->for($company)->create();
+    $user->assignRole('company_admin');
+
+    $service = app(NovaVoiceWorkflowService::class);
+    $service->start($user, 'create_client');
+
+    $advance = $service->advance($user, "Complet Amira Adresse C'est Amira Gmail.com Numéro De C'est sans compte");
+    if (! $advance['done']) {
+        $advance = $service->advance($user, 'aucun');
+    }
+    expect($advance['done'])->toBeTrue();
+
+    $client = Client::query()->withoutGlobalScopes()
+        ->where('company_id', $company->id)
+        ->where('email', 'amira@gmail.com')
+        ->first();
+
+    expect($client)->not->toBeNull();
+    expect($client->name)->toBe('Amira');
+});
+
 test('voice workflow updates vat rate', function () {
     $company = Company::factory()->create();
     $user = User::factory()->for($company)->create();
