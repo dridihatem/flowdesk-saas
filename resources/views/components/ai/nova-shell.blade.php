@@ -24,6 +24,7 @@
         'creditCost' => $nova['credit_cost'] ?? 0,
         'csrf' => csrf_token(),
         'compact' => $compact,
+        'fullscreen' => (bool) ($nova['fullscreen'] ?? false),
         'enableWakeWord' => $enableWakeWord,
         'skipWakeWord' => ! empty($flowdeskNovaVoiceNav['enabled']),
         'userId' => (string) (auth()->id() ?? ''),

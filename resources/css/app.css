@@ -432,6 +432,817 @@
         }
     }
 
+    /* —— Nova neural fullscreen stage (/assistant) —— */
+    .nova-neural-page {
+        --nova-stage-safe-top: env(safe-area-inset-top, 0px);
+        --nova-stage-safe-bottom: env(safe-area-inset-bottom, 0px);
+        --nova-stage-accent: var(--flow-primary, #0ea5e9);
+        --nova-stage-accent-soft: color-mix(in srgb, var(--nova-stage-accent) 55%, #7dd3fc);
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100dvh - 3.25rem);
+        background:
+            radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--nova-stage-accent) 22%, transparent), transparent 55%),
+            linear-gradient(165deg, #020617 0%, #0b1224 42%, #071018 100%);
+        color: #e2e8f0;
+    }
+
+    @screen lg {
+        .nova-neural-page {
+            min-height: calc(100dvh - 3.5rem);
+        }
+    }
+
+    html.nova-neural-page-active body.nova-neural-page-active .flow-workspace-main > main {
+        padding-bottom: 0;
+    }
+
+    .nova-neural-page__tabs {
+        position: relative;
+        z-index: 20;
+        display: flex;
+        gap: 0.35rem;
+        padding: 0.65rem 0.85rem;
+        padding-top: calc(0.65rem + var(--nova-stage-safe-top));
+        border-bottom: 1px solid rgb(148 163 184 / 0.12);
+        background: rgb(2 6 23 / 0.72);
+        backdrop-filter: blur(12px);
+    }
+
+    .nova-neural-page__tab {
+        display: inline-flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        border-radius: 0.85rem;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: rgb(148 163 184);
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    @screen sm {
+        .nova-neural-page__tab {
+            flex: none;
+        }
+    }
+
+    .nova-neural-page__tab:hover {
+        color: #f8fafc;
+        background: rgb(148 163 184 / 0.08);
+    }
+
+    .nova-neural-page__tab.is-active {
+        color: #f8fafc;
+        background: color-mix(in srgb, var(--nova-stage-accent) 28%, rgb(15 23 42 / 0.9));
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-stage-accent) 45%, transparent);
+    }
+
+    .nova-neural-page__stage {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nova-neural-page__stage > [x-data] {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nova-neural-page__writing {
+        flex: 1;
+        overflow: auto;
+        padding: 1rem 1rem calc(1.25rem + var(--nova-stage-safe-bottom));
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+    html.dark .nova-neural-page__writing {
+        background: #0f172a;
+        color: #e2e8f0;
+    }
+
+    .nova-neural-stage {
+        position: relative;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: min(72dvh, 52rem);
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    .nova-neural-stage__bg {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+    }
+
+    .nova-neural-stage__vignette {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--nova-stage-accent) 14%, transparent), transparent 55%),
+            linear-gradient(180deg, rgb(2 6 23 / 0.15), rgb(2 6 23 / 0.72) 88%);
+    }
+
+    .nova-neural-stage__grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.18;
+        background-image:
+            linear-gradient(rgb(148 163 184 / 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(148 163 184 / 0.08) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    }
+
+    .nova-neural-stage__chrome {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 1rem 1rem 0.5rem;
+    }
+
+    .nova-neural-stage__brand-mark {
+        font-family: var(--flow-font-display, var(--flow-font-sans), ui-sans-serif, system-ui, sans-serif);
+        font-size: clamp(1.35rem, 3.5vw, 2.15rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        color: #f8fafc;
+        text-shadow: 0 0 40px color-mix(in srgb, var(--nova-stage-accent) 35%, transparent);
+    }
+
+    .nova-neural-stage__brand-sub {
+        margin-top: 0.35rem;
+        max-width: 28rem;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        color: rgb(148 163 184);
+    }
+
+    .nova-neural-stage__chrome-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .nova-neural-stage__status {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        max-width: 10rem;
+        border-radius: 999px;
+        border: 1px solid rgb(148 163 184 / 0.22);
+        background: rgb(15 23 42 / 0.72);
+        padding: 0.35rem 0.65rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgb(148 163 184);
+    }
+
+    .nova-neural-stage__status.is-active {
+        border-color: color-mix(in srgb, var(--nova-stage-accent) 50%, transparent);
+        color: var(--nova-stage-accent-soft);
+    }
+
+    .nova-neural-stage__status.is-listening {
+        border-color: rgb(56 189 248 / 0.55);
+        color: #7dd3fc;
+    }
+
+    .nova-neural-stage__status.is-speaking {
+        border-color: rgb(52 211 153 / 0.55);
+        color: #6ee7b7;
+    }
+
+    .nova-neural-stage__status-ring {
+        position: absolute;
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+        opacity: 0;
+    }
+
+    .nova-neural-stage__status.is-active .nova-neural-stage__status-ring {
+        opacity: 0.7;
+        animation: nova-ring-pulse 1.6s ease-out infinite;
+    }
+
+    .nova-neural-stage__status-dot {
+        width: 0.4rem;
+        height: 0.4rem;
+        border-radius: 999px;
+        background: currentColor;
+        opacity: 0.7;
+    }
+
+    .nova-neural-stage__status.is-active .nova-neural-stage__status-dot {
+        animation: nova-status-pulse 1.2s ease-in-out infinite;
+        opacity: 1;
+    }
+
+    .nova-neural-stage__status-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .nova-neural-stage__icon-btn {
+        display: inline-flex;
+        height: 2.25rem;
+        width: 2.25rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        border: 1px solid rgb(148 163 184 / 0.2);
+        background: rgb(15 23 42 / 0.65);
+        color: #cbd5e1;
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nova-neural-stage__icon-btn:hover {
+        border-color: color-mix(in srgb, var(--nova-stage-accent) 45%, transparent);
+        color: #f8fafc;
+        background: color-mix(in srgb, var(--nova-stage-accent) 18%, rgb(15 23 42));
+    }
+
+    .nova-neural-stage__body {
+        position: relative;
+        z-index: 5;
+        display: grid;
+        flex: 1;
+        min-height: 0;
+        gap: 0.75rem;
+        padding: 0.25rem 0.85rem calc(0.85rem + var(--nova-stage-safe-bottom));
+        grid-template-rows: auto minmax(14rem, 1fr);
+    }
+
+    @screen lg {
+        .nova-neural-stage__body {
+            grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
+            grid-template-rows: minmax(0, 1fr);
+            gap: 1rem;
+            padding: 0.5rem 1.25rem 1.25rem;
+        }
+    }
+
+    .nova-neural-stage__orb-zone {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 0.5rem 0.75rem;
+        text-align: center;
+    }
+
+    .nova-neural-stage__orb {
+        position: relative;
+        display: flex;
+        height: clamp(9.5rem, 28vw, 14rem);
+        width: clamp(9.5rem, 28vw, 14rem);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nova-neural-stage__orbit {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        border: 1px solid color-mix(in srgb, var(--nova-stage-accent) 28%, transparent);
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    .nova-neural-stage__orbit--mid {
+        inset: 8%;
+        border-color: color-mix(in srgb, var(--nova-stage-accent-soft) 35%, transparent);
+    }
+
+    .nova-neural-stage__orbit--inner {
+        inset: 18%;
+        border-color: rgb(110 231 183 / 0.28);
+    }
+
+    .nova-neural-stage__orbit.is-active {
+        opacity: 1;
+        animation: nova-ring-pulse 2s ease-out infinite;
+    }
+
+    .nova-neural-stage__orbit--mid.is-active {
+        animation-duration: 1.55s;
+    }
+
+    .nova-neural-stage__orbit--inner.is-active {
+        animation-duration: 1.15s;
+    }
+
+    .nova-neural-stage__mic {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        height: clamp(4.75rem, 16vw, 6.75rem);
+        width: clamp(4.75rem, 16vw, 6.75rem);
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: white;
+        font-size: clamp(1.35rem, 4vw, 1.85rem);
+        background:
+            radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--nova-stage-accent-soft) 90%, white), transparent 55%),
+            linear-gradient(145deg, var(--nova-stage-accent-soft), color-mix(in srgb, var(--nova-stage-accent) 70%, #0f172a));
+        box-shadow:
+            0 0 0 1px color-mix(in srgb, var(--nova-stage-accent) 40%, transparent),
+            0 18px 40px -16px color-mix(in srgb, var(--nova-stage-accent) 70%, transparent);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    .nova-neural-stage__mic:hover:not(:disabled) {
+        transform: scale(1.04);
+    }
+
+    .nova-neural-stage__mic:disabled {
+        opacity: 0.55;
+    }
+
+    .nova-neural-stage__mic.is-listening {
+        background: linear-gradient(145deg, #7dd3fc, #0284c7);
+        box-shadow: 0 0 0 1px rgb(56 189 248 / 0.5), 0 0 42px rgb(14 165 233 / 0.45);
+        animation: nova-mic-breathe 1.4s ease-in-out infinite;
+    }
+
+    .nova-neural-stage__mic.is-speaking {
+        background: linear-gradient(145deg, #6ee7b7, #059669);
+        box-shadow: 0 0 0 1px rgb(52 211 153 / 0.5), 0 0 42px rgb(16 185 129 / 0.4);
+    }
+
+    .nova-neural-stage__mic.is-thinking {
+        filter: saturate(1.15);
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--nova-stage-accent) 55%, transparent), 0 0 36px color-mix(in srgb, var(--nova-stage-accent) 40%, transparent);
+    }
+
+    @keyframes nova-mic-breathe {
+        0%,
+        100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.06);
+        }
+    }
+
+    .nova-neural-stage__waves {
+        display: flex;
+        height: 2rem;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 0.28rem;
+        margin-top: 1rem;
+        opacity: 0.35;
+    }
+
+    .nova-neural-stage__waves.is-active {
+        opacity: 1;
+    }
+
+    .nova-neural-stage__wave {
+        width: 0.28rem;
+        height: 0.4rem;
+        border-radius: 999px;
+        background: var(--nova-stage-accent-soft);
+        transform-origin: bottom;
+    }
+
+    .nova-neural-stage__waves.is-active .nova-neural-stage__wave {
+        animation: nova-wave 0.9s ease-in-out infinite;
+        animation-delay: calc(var(--nova-wave-index) * 0.07s);
+    }
+
+    .nova-neural-stage__hint {
+        margin-top: 0.85rem;
+        max-width: 22rem;
+        font-size: 0.75rem;
+        line-height: 1.45;
+        color: rgb(148 163 184);
+    }
+
+    .nova-neural-stage__hint--warn {
+        color: #fcd34d;
+    }
+
+    .nova-neural-stage__hint--error {
+        color: #fb7185;
+    }
+
+    .nova-neural-stage__transcript-live {
+        margin-top: 0.85rem;
+        max-width: 26rem;
+        border-radius: 0.9rem;
+        border: 1px solid rgb(148 163 184 / 0.18);
+        background: rgb(2 6 23 / 0.55);
+        padding: 0.65rem 0.85rem;
+        font-size: 0.875rem;
+        line-height: 1.45;
+        color: #e2e8f0;
+    }
+
+    .nova-neural-stage__quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .nova-neural-stage__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border-radius: 0.85rem;
+        background: color-mix(in srgb, var(--nova-stage-accent) 88%, #0f172a);
+        padding: 0.65rem 1rem;
+        font-size: 0.8125rem;
+        font-weight: 650;
+        color: white;
+        box-shadow: 0 12px 28px -16px color-mix(in srgb, var(--nova-stage-accent) 70%, transparent);
+        transition: filter 0.15s ease, opacity 0.15s ease;
+    }
+
+    .nova-neural-stage__cta:hover:not(:disabled) {
+        filter: brightness(1.08);
+    }
+
+    .nova-neural-stage__cta:disabled {
+        opacity: 0.45;
+    }
+
+    .nova-neural-stage__cta--ghost {
+        background: rgb(15 23 42 / 0.7);
+        border: 1px solid rgb(148 163 184 / 0.25);
+        box-shadow: none;
+        color: #e2e8f0;
+    }
+
+    .nova-neural-stage__stream {
+        display: flex;
+        min-height: 0;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 1.25rem;
+        border: 1px solid rgb(148 163 184 / 0.14);
+        background: rgb(2 6 23 / 0.58);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 24px 48px -28px rgb(0 0 0 / 0.65);
+    }
+
+    .nova-neural-stage__stream-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        border-bottom: 1px solid rgb(148 163 184 / 0.12);
+        padding: 0.75rem 0.9rem;
+    }
+
+    .nova-neural-stage__stream-head h2 {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgb(148 163 184);
+    }
+
+    .nova-neural-stage__activity-live {
+        display: inline-flex;
+        max-width: 60%;
+        align-items: center;
+        gap: 0.4rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.7rem;
+        color: var(--nova-stage-accent-soft);
+    }
+
+    .nova-neural-stage__activity-pulse {
+        width: 0.4rem;
+        height: 0.4rem;
+        flex-shrink: 0;
+        border-radius: 999px;
+        background: var(--nova-stage-accent);
+        animation: nova-status-pulse 1.1s ease-in-out infinite;
+    }
+
+    .nova-neural-stage__stream-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0.85rem;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nova-neural-stage__empty {
+        font-size: 0.875rem;
+        color: rgb(148 163 184);
+    }
+
+    .nova-neural-stage__bubble {
+        margin-bottom: 0.65rem;
+        border-radius: 0.95rem;
+        border: 1px solid rgb(148 163 184 / 0.14);
+        padding: 0.7rem 0.8rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    .nova-neural-stage__bubble.is-assistant {
+        background: color-mix(in srgb, var(--nova-stage-accent) 10%, rgb(15 23 42 / 0.85));
+        border-color: color-mix(in srgb, var(--nova-stage-accent) 28%, transparent);
+        color: #f1f5f9;
+    }
+
+    .nova-neural-stage__bubble.is-user {
+        margin-inline-start: 1.5rem;
+        background: rgb(30 41 59 / 0.75);
+        color: #e2e8f0;
+    }
+
+    .nova-neural-stage__bubble-role {
+        margin-bottom: 0.25rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgb(148 163 184);
+    }
+
+    .nova-neural-stage__bubble-text {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .nova-neural-stage__activity {
+        margin-top: 0.5rem;
+        border-radius: 0.85rem;
+        border: 1px solid rgb(148 163 184 / 0.14);
+        background: rgb(15 23 42 / 0.55);
+        padding: 0.65rem 0.75rem;
+    }
+
+    .nova-neural-stage__activity-title {
+        margin-bottom: 0.45rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgb(148 163 184);
+    }
+
+    .nova-neural-stage__activity ul {
+        display: grid;
+        gap: 0.4rem;
+    }
+
+    .nova-neural-stage__activity li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: #cbd5e1;
+    }
+
+    .nova-neural-stage__activity-dot {
+        margin-top: 0.3rem;
+        width: 0.35rem;
+        height: 0.35rem;
+        flex-shrink: 0;
+        border-radius: 999px;
+        background: var(--nova-stage-accent);
+    }
+
+    .nova-neural-stage__activity-dot.is-done {
+        background: #34d399;
+    }
+
+    .nova-neural-stage__activity-dot.is-live {
+        animation: nova-status-pulse 1.1s ease-in-out infinite;
+    }
+
+    .nova-neural-stage__clarify,
+    .nova-neural-stage__confirm {
+        margin-top: 0.65rem;
+        border-radius: 0.95rem;
+        padding: 0.8rem;
+        font-size: 0.8125rem;
+    }
+
+    .nova-neural-stage__clarify {
+        border: 1px solid rgb(251 191 36 / 0.35);
+        background: rgb(69 26 3 / 0.45);
+        color: #fde68a;
+    }
+
+    .nova-neural-stage__clarify-options,
+    .nova-neural-stage__confirm-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 0.65rem;
+    }
+
+    .nova-neural-stage__chip {
+        border-radius: 0.7rem;
+        border: 1px solid rgb(251 191 36 / 0.4);
+        background: rgb(15 23 42 / 0.55);
+        padding: 0.45rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 650;
+        color: #fef3c7;
+    }
+
+    .nova-neural-stage__chip:hover {
+        background: rgb(120 53 15 / 0.55);
+    }
+
+    .nova-neural-stage__confirm {
+        border: 1px solid rgb(251 113 133 / 0.4);
+        background: rgb(76 5 25 / 0.45);
+        color: #fecdd3;
+    }
+
+    .nova-neural-stage__composer {
+        display: flex;
+        gap: 0.5rem;
+        border-top: 1px solid rgb(148 163 184 / 0.12);
+        padding: 0.7rem;
+        background: rgb(2 6 23 / 0.45);
+    }
+
+    .nova-neural-stage__input {
+        width: 100%;
+        border-radius: 0.85rem;
+        border: 1px solid rgb(148 163 184 / 0.22);
+        background: rgb(15 23 42 / 0.85);
+        padding: 0.7rem 0.85rem;
+        font-size: 0.875rem;
+        color: #f8fafc;
+        outline: none;
+    }
+
+    .nova-neural-stage__input::placeholder {
+        color: rgb(100 116 139);
+    }
+
+    .nova-neural-stage__input:focus {
+        border-color: color-mix(in srgb, var(--nova-stage-accent) 55%, transparent);
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--nova-stage-accent) 25%, transparent);
+    }
+
+    .nova-neural-stage__send {
+        flex-shrink: 0;
+        border-radius: 0.85rem;
+        background: color-mix(in srgb, var(--nova-stage-accent) 88%, #0f172a);
+        padding: 0.7rem 1rem;
+        font-size: 0.8125rem;
+        font-weight: 650;
+        color: white;
+    }
+
+    .nova-neural-stage__send:disabled {
+        opacity: 0.45;
+    }
+
+    .nova-neural-stage__drawer {
+        position: absolute;
+        inset: 0;
+        z-index: 30;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .nova-neural-stage__drawer-backdrop {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        background: rgb(2 6 23 / 0.55);
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+    }
+
+    .nova-neural-stage__drawer-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        width: min(100%, 24rem);
+        max-height: 100%;
+        flex-direction: column;
+        gap: 0.85rem;
+        overflow-y: auto;
+        border-inline-start: 1px solid rgb(148 163 184 / 0.16);
+        background: rgb(2 6 23 / 0.92);
+        padding: 0.9rem;
+        padding-bottom: calc(0.9rem + var(--nova-stage-safe-bottom));
+        box-shadow: -18px 0 40px -24px rgb(0 0 0 / 0.7);
+    }
+
+    .nova-neural-stage__drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .nova-neural-stage__drawer-head h3 {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #f8fafc;
+    }
+
+    .nova-neural-stage__widget {
+        border-color: rgb(148 163 184 / 0.16) !important;
+        background: rgb(15 23 42 / 0.72) !important;
+        box-shadow: none !important;
+        --tw-ring-color: transparent !important;
+    }
+
+    .nova-neural-stage__widget h3,
+    .nova-neural-stage__widget .font-semibold,
+    .nova-neural-stage__widget .text-slate-900,
+    .nova-neural-stage__widget .text-xl,
+    .nova-neural-stage__widget .text-lg {
+        color: #f8fafc !important;
+    }
+
+    .nova-neural-stage__widget p,
+    .nova-neural-stage__widget .text-xs,
+    .nova-neural-stage__widget .text-slate-500,
+    .nova-neural-stage__widget .text-slate-600 {
+        color: #94a3b8 !important;
+    }
+
+    .nova-neural-stage__widget .rounded-xl {
+        background: rgb(2 6 23 / 0.55) !important;
+    }
+
+    .nova-neural-stage__widget button {
+        border-color: rgb(148 163 184 / 0.2) !important;
+        background: rgb(2 6 23 / 0.55) !important;
+        color: #e2e8f0 !important;
+    }
+
+    .nova-neural-stage__help {
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        color: #cbd5e1 !important;
+    }
+
+    .nova-neural-stage__help summary,
+    .nova-neural-stage__help h4 {
+        color: #f8fafc !important;
+    }
+
+    .nova-neural-stage__help details {
+        border-color: rgb(148 163 184 / 0.16) !important;
+        background: rgb(15 23 42 / 0.55) !important;
+    }
+
+    .nova-neural-stage--listening {
+        --nova-stage-accent-soft: #7dd3fc;
+    }
+
+    .nova-neural-stage--speaking {
+        --nova-stage-accent-soft: #6ee7b7;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .nova-neural-stage__orbit.is-active,
+        .nova-neural-stage__waves.is-active .nova-neural-stage__wave,
+        .nova-neural-stage__status.is-active .nova-neural-stage__status-dot,
+        .nova-neural-stage__status.is-active .nova-neural-stage__status-ring,
+        .nova-neural-stage__mic.is-listening,
+        .nova-neural-stage__activity-pulse,
+        .nova-neural-stage__activity-dot.is-live {
+            animation: none;
+        }
+    }
+
     .flow-dashboard-hero {
         position: relative;
         overflow: hidden;

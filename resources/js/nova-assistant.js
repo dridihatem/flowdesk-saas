@@ -40,6 +40,7 @@ export function registerNovaAssistant(Alpine) {
         csrf: cfg.csrf || '',
         appLocale: cfg.appLocale || 'en',
         isCompact: Boolean(cfg.compact),
+        isFullscreen: Boolean(cfg.fullscreen),
         speechLocale: cfg.locale || flowdeskSpeechLocale(cfg.appLocale) || null,
         labels: cfg.labels || {},
         wakeHint: cfg.wakeHint || '',
@@ -60,6 +61,7 @@ export function registerNovaAssistant(Alpine) {
         conversationId: null,
         lastReply: '',
         error: '',
+        panel: 'talk',
         voiceSupported: false,
         recognition: null,
         recognitionActive: false,
@@ -172,7 +174,7 @@ export function registerNovaAssistant(Alpine) {
                 });
             }
 
-            this.$nextTick(() => this.initNeuralBackground(cfg.compact));
+            this.$nextTick(() => this.initNeuralBackground(cfg.compact, cfg.fullscreen));
             this.$watch('neuralEnergy', (value) => {
                 this._neuralBg?.setEnergy(value);
             });
@@ -310,13 +312,16 @@ export function registerNovaAssistant(Alpine) {
             }
         },
 
-        initNeuralBackground(compact) {
+        initNeuralBackground(compact, fullscreen = false) {
             const canvas = this.$el.querySelector('[data-nova-neural-canvas]');
             if (!canvas) {
                 return;
             }
             this._neuralBg?.destroy();
-            this._neuralBg = initNovaNeuralBackground(canvas, { compact: Boolean(compact) });
+            this._neuralBg = initNovaNeuralBackground(canvas, {
+                compact: Boolean(compact),
+                fullscreen: Boolean(fullscreen),
+            });
             this._neuralBg.setEnergy(this.neuralEnergy);
         },
 
