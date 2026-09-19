@@ -53,9 +53,11 @@ test('company user can open nova assistant page', function () {
         ->assertSee(__('ai_writing_mode_pricing_title'))
         ->assertDontSee(__('ai_writing_mode_landing_page_title'))
         ->assertSee('aiWritingModes', false)
-        // Paths appear JSON-escaped in Alpine config (\/), so assert path fragments.
-        ->assertSee('/assistant/agent', false)
-        ->assertSee('/assistant/chat', false);
+        // Alpine @js() wraps config in JSON.parse('…') with hex/slash escapes —
+        // assert keys the same way as NovaUiAgentWiringTest (not raw paths).
+        ->assertSee('agentUrl', false)
+        ->assertSee('legacyChatUrl', false)
+        ->assertSee('useAgent', false);
 });
 test('assistant hash mode=proposal opens writing tab with proposal mode', function () {
     $user = User::factory()->create();
