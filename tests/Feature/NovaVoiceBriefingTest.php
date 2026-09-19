@@ -36,7 +36,7 @@ test('nova voice nav config includes briefing phrases and url', function () {
     expect($config['briefingUrl'])->toBe(route('assistant.briefing'));
     expect($config['briefingRedirectUrl'])->toBeNull();
     expect($config['briefingPhrases'])->toContain('donne moi une analyse complete');
-    expect($config['briefingCreditCost'])->toBe(15);
+    expect($config['briefingCreditCost'])->toBe((int) config('flowdesk.ai_task_credits.assistant.modes.nova_briefing'));
 });
 
 test('nova briefing endpoint requires authentication', function () {
@@ -63,7 +63,7 @@ test('nova briefing returns audio when openai tts is configured', function () {
         ->postJson(route('assistant.briefing'))
         ->assertOk()
         ->assertHeader('Content-Type', 'audio/mpeg')
-        ->assertHeader('X-AI-Credits-Cost', '15');
+        ->assertHeader('X-AI-Credits-Cost', (string) (int) config('flowdesk.ai_task_credits.assistant.modes.nova_briefing'));
 });
 
 test('nova briefing returns 503 when browser voice only is selected', function () {
@@ -97,7 +97,7 @@ test('nova briefing text replay uses cache without double charge', function () {
     $this->actingAs($user)
         ->postJson(route('assistant.briefing'))
         ->assertOk()
-        ->assertHeader('X-AI-Credits-Cost', '15');
+        ->assertHeader('X-AI-Credits-Cost', (string) (int) config('flowdesk.ai_task_credits.assistant.modes.nova_briefing'));
 
     $this->actingAs($user)
         ->postJson(route('assistant.briefing', ['text_only' => 1, 'replay' => 1]))
