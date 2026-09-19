@@ -468,10 +468,102 @@
     }
 
     .flow-primary-button {
-        box-shadow: 0 4px 14px -3px color-mix(in srgb, var(--flow-primary) 42%, transparent);
+        min-height: 2.75rem;
+        padding-inline: 1.15rem;
+        font-size: 0.8125rem;
+        letter-spacing: 0.06em;
+        box-shadow:
+            0 1px 0 0 color-mix(in srgb, white 22%, transparent) inset,
+            0 8px 18px -8px color-mix(in srgb, var(--flow-primary) 55%, transparent);
+    }
+
+    .flow-primary-button:hover {
+        filter: brightness(1.04);
+        box-shadow:
+            0 1px 0 0 color-mix(in srgb, white 28%, transparent) inset,
+            0 12px 22px -10px color-mix(in srgb, var(--flow-primary) 60%, transparent);
+    }
+
+    .flow-primary-button:disabled {
+        filter: none;
+        opacity: 0.55;
+        box-shadow: none;
+    }
+
+    .flow-cta-link {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition;
+        background-image: linear-gradient(to right, var(--flow-primary), var(--flow-primary-hover));
+        box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--flow-primary) 50%, transparent);
+    }
+
+    .flow-cta-link:hover {
+        filter: brightness(1.04);
+    }
+
+    .flow-cta-secondary {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition;
+        border-color: color-mix(in srgb, var(--flow-border) 90%, transparent);
+        background-color: var(--flow-surface);
+        color: var(--flow-secondary);
+    }
+
+    .flow-cta-secondary:hover {
+        background-color: color-mix(in srgb, var(--flow-secondary) 8%, var(--flow-surface-muted));
+    }
+
+    .flow-portal-shell {
+        @apply w-full max-w-12xl space-y-6 px-4 py-8 sm:px-6 sm:py-10 lg:px-8;
+    }
+
+    .flow-portal-hero {
+        @apply overflow-hidden rounded-2xl border p-5 shadow-sm sm:p-6;
+        border-color: color-mix(in srgb, var(--flow-border) 88%, transparent);
+        background:
+            linear-gradient(
+                135deg,
+                color-mix(in srgb, var(--flow-primary) 8%, var(--flow-surface)) 0%,
+                var(--flow-surface) 48%,
+                color-mix(in srgb, var(--flow-secondary) 4%, var(--flow-surface)) 100%
+            );
+    }
+
+    html.dark .flow-portal-hero {
+        border-color: color-mix(in srgb, var(--flow-border) 90%, transparent);
+        background:
+            linear-gradient(
+                135deg,
+                color-mix(in srgb, var(--flow-primary) 16%, var(--flow-surface)) 0%,
+                var(--flow-surface) 55%,
+                color-mix(in srgb, var(--flow-surface-muted) 80%, black) 100%
+            );
+    }
+
+    .flow-portal-card {
+        @apply block rounded-2xl border p-5 shadow-sm transition;
+        border-color: color-mix(in srgb, var(--flow-border) 90%, transparent);
+        background-color: color-mix(in srgb, var(--flow-surface) 96%, transparent);
+    }
+
+    .flow-portal-card:hover {
+        border-color: color-mix(in srgb, var(--flow-primary) 35%, var(--flow-border));
+        box-shadow: 0 10px 24px -16px color-mix(in srgb, var(--flow-primary) 45%, transparent);
+    }
+
+    .flow-table-wrap {
+        @apply -mx-4 overflow-x-auto overscroll-x-contain sm:mx-0;
+    }
+
+    .flow-admin-mobile-drawer {
+        @apply fixed inset-y-0 start-0 z-[60] flex w-[min(20rem,88vw)] flex-col border-e bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-6 shadow-2xl;
+        border-color: rgb(30 41 59 / 0.8);
+    }
+
+    .flow-admin-mobile-backdrop {
+        @apply fixed inset-0 z-[55] bg-slate-950/50 backdrop-blur-sm;
     }
 
     .flow-secondary-button {
+        min-height: 2.5rem;
         border-color: color-mix(in srgb, var(--flow-secondary) 28%, var(--flow-border));
         background-color: var(--flow-surface);
         color: var(--flow-secondary);

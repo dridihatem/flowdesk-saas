@@ -4,38 +4,40 @@ namespace Database\Seeders;
 
 use App\Models\Plan;
 use App\Models\PlanLimit;
+use App\Models\PlanPeriodPrice;
 use Illuminate\Database\Seeder;
 
 class PlanSeeder extends Seeder
 {
+    /**
+     * Canonical product billing plans (USD major units).
+     * Period totals use volume discounts: 3m full, 6m −10%, 12m −20%.
+     *
+     * @var array<string, array{name: string, price_monthly: int, currency: string}>
+     */
+    private const PLANS = [
+        'starter' => [
+            'name' => 'Starter',
+            'price_monthly' => 39,
+            'currency' => 'USD',
+        ],
+        'pro' => [
+            'name' => 'Pro',
+            'price_monthly' => 99,
+            'currency' => 'USD',
+        ],
+        'enterprise' => [
+            'name' => 'Enterprise',
+            'price_monthly' => 249,
+            'currency' => 'USD',
+        ],
+    ];
+
     public function run(): void
     {
-        $starter = Plan::query()->firstOrCreate(
-            ['slug' => 'starter'],
-            [
-                'name' => 'Starter',
-                'price_monthly' => 29,
-                'currency' => 'USD',
-            ],
-        );
-
-        $pro = Plan::query()->firstOrCreate(
-            ['slug' => 'pro'],
-            [
-                'name' => 'Pro',
-                'price_monthly' => 79,
-                'currency' => 'USD',
-            ],
-        );
-
-        $enterprise = Plan::query()->firstOrCreate(
-            ['slug' => 'enterprise'],
-            [
-                'name' => 'Enterprise',
-                'price_monthly' => 199,
-                'currency' => 'USD',
-            ],
-        );
+        $starter = $this->syncPlan('starter');
+        $pro = $this->syncPlan('pro');
+        $enterprise = $this->syncPlan('enterprise');
 
         $starter->update(['addons' => []]);
         $pro->update([
@@ -58,7 +60,7 @@ class PlanSeeder extends Seeder
             'forms' => 3,
             'submissions' => 500,
             'widgets' => 3,
-            'ai_credits' => 1000,
+            'ai_credits' => 2500,
             'analytics' => 0,
             'marketing_hub' => 0,
             'email_marketing' => 0,
@@ -77,7 +79,7 @@ class PlanSeeder extends Seeder
             'forms' => 25,
             'submissions' => 10000,
             'widgets' => 25,
-            'ai_credits' => 50000,
+            'ai_credits' => 40000,
             'analytics' => 1,
             'marketing_hub' => 1,
             'email_marketing' => 1,
@@ -108,6 +110,46 @@ class PlanSeeder extends Seeder
             'workspace_ai_agent' => 1,
             'hr' => 1,
         ]);
+    }
+
+    private function syncPlan(string $slug): Plan
+    {
+        $attrs = self::PLANS[$slug];
+
+        $plan = Plan::query()->updateOrCreate(
+            ['slug' => $slug],
+            [
+                'name' => $attrs['name'],
+                'price_monthly' => $attrs['price_monthly'],
+                'currency' => $attrs['currency'],
+            ],
+        );
+
+        $this->syncPeriodPrices($plan);
+
+        return $plan;
+    }
+
+    private function syncPeriodPrices(Plan $plan): void
+    {
+        $monthlyMajor = (int) $plan->price_monthly;
+        $monthlyMinor = $monthlyMajor * 100;
+
+        $totals = [
+            3 => $monthlyMinor * 3,
+            6 => (int) round($monthlyMinor * 6 * 0.90),
+            12 => (int) round($monthlyMinor * 12 * 0.80),
+        ];
+
+        foreach ($totals as $months => $priceMinor) {
+            PlanPeriodPrice::query()->updateOrCreate(
+                [
+                    'plan_id' => $plan->id,
+                    'period_months' => $months,
+                ],
+                ['price_minor' => $priceMinor],
+            );
+        }
     }
 
     /**

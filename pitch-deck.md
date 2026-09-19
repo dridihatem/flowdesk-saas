@@ -229,9 +229,9 @@ Marketplace store → purchase → install per workspace
 **Example pricing (illustrative — customize):**
 | Plan | USD / month | Includes |
 |---|---|---|
-| Starter | ~$29 | 5 users, 10 projects, forms, basic AI credits, core CRM |
-| Pro | ~$79 | 25 users, providers, marketing hub, email marketing, analytics, reports, calendar, modules, **BYOK AI agent**, premium voice |
-| Enterprise | ~$199 | Unlimited quotas, all features, dedicated success, custom SLA |
+| Starter | $39 | 5 users, 10 projects, forms, 2.5k AI credits, core CRM |
+| Pro | $99 | 25 users, providers, marketing hub, email marketing, analytics, reports, calendar, modules, **BYOK AI agent**, premium voice |
+| Enterprise | $249 | Unlimited quotas, all features, dedicated success, custom SLA |
 
 **Speaker notes:**
 > Anchor vs cost of 4–5 separate tools + vertical app. **Nova credits** and **module subscriptions** add ARPU without new sales motion.

@@ -75,9 +75,18 @@
                                                 {{ __('billing_ai_credits_used', ['used' => number_format((int) $aiCreditsUsed), 'limit' => number_format((int) $aiCreditLimit)]) }}
                                             </p>
                                         </div>
-                                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                                            <div class="h-full rounded-full bg-indigo-500 transition-all" style="width: {{ $aiCreditPct }}%"></div>
+                                        <div class="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                                            <div class="h-full rounded-full transition-all" style="width: {{ $aiCreditPct }}%; background-color: var(--flow-primary)"></div>
                                         </div>
+                                        @if ($aiCreditPriceMinor > 0)
+                                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                                                {{ __('Estimated overage') }}:
+                                                <span class="font-semibold tabular-nums text-slate-700 dark:text-slate-200">
+                                                    {{ flowdesk_format_minor((int) $aiCreditPriceMinor, 'USD') }} USD
+                                                </span>
+                                                / {{ __('credit') }}
+                                            </p>
+                                        @endif
                                     </div>
                                 @elseif ($aiCreditsUsed > 0)
                                     <div class="rounded-xl border border-slate-200/80 bg-white px-4 py-3 sm:col-span-2 dark:border-slate-700 dark:bg-slate-900/50">

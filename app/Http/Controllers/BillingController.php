@@ -83,7 +83,7 @@ class BillingController extends Controller
             ->count();
 
         $payPerUse = Config::get('flowdesk.pay_per_use', []);
-        $aiCreditPriceMinor = (int) ($payPerUse['ai_credit_price_minor'] ?? 1);
+        $aiCreditPriceMinor = (int) ($payPerUse['ai_credit_price_minor'] ?? 2);
         $payPerUseEstimate = (int) $aiCreditsUsed * $aiCreditPriceMinor;
 
         $planAddons = is_array($plan?->addons) ? $plan->addons : [];

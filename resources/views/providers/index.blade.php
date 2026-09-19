@@ -7,32 +7,34 @@
         <div class="max-w-12xl w-full sm:px-6 lg:px-8">
             <x-flow.page-header :title="__('Business providers')">
                 <x-slot name="actions">
+                    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
                     @if (Auth::user()->hasRole('company_admin'))
-                        <a href="{{ route('settings.provider-recruitment') }}">
-                            <x-secondary-button type="button" class="inline-flex items-center gap-2 !normal-case">
+                        <a href="{{ route('settings.provider-recruitment') }}" class="w-full sm:w-auto">
+                            <x-secondary-button type="button" class="inline-flex w-full items-center justify-center gap-2 !normal-case sm:w-auto">
                                 <i class="fa-solid fa-link text-sm" aria-hidden="true"></i>
                                 {{ __('Provider recruitment') }}
                             </x-secondary-button>
                         </a>
                     @endif
-                    <a href="{{ route('providers.remittance-requests.index') }}">
-                        <x-secondary-button type="button" class="inline-flex items-center gap-2 !normal-case">
+                    <a href="{{ route('providers.remittance-requests.index') }}" class="w-full sm:w-auto">
+                        <x-secondary-button type="button" class="inline-flex w-full items-center justify-center gap-2 !normal-case sm:w-auto">
                             <i class="fa-solid fa-money-bill-transfer text-sm" aria-hidden="true"></i>
                             {{ __('provider_remittance_inbox_title') }}
                         </x-secondary-button>
                     </a>
-                    <a href="{{ route('providers.create') }}">
-                        <x-primary-button type="button" class="inline-flex items-center gap-2 !normal-case">
+                    <a href="{{ route('providers.create') }}" class="w-full sm:w-auto">
+                        <x-primary-button type="button" class="inline-flex w-full items-center justify-center gap-2 !normal-case sm:w-auto">
                             <i class="fa-solid fa-user-tie text-sm" aria-hidden="true"></i>
                             {{ __('Add provider') }}
                         </x-primary-button>
                     </a>
+                    </div>
                 </x-slot>
             </x-flow.page-header>
 
-            <form method="GET" class="mb-6 flex flex-wrap gap-3">
-                <x-text-input name="q" :value="$q" class="max-w-md" placeholder="{{ __('Search providers…') }}" />
-                <x-secondary-button type="submit" class="inline-flex items-center gap-2">
+            <form method="GET" class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <x-text-input name="q" :value="$q" class="w-full max-w-md" placeholder="{{ __('Search providers…') }}" />
+                <x-secondary-button type="submit" class="inline-flex w-full items-center justify-center gap-2 sm:w-auto">
                     <i class="fa-solid fa-magnifying-glass text-xs" aria-hidden="true"></i>
                     {{ __('Search') }}
                 </x-secondary-button>
@@ -42,7 +44,8 @@
                 <div class="mb-4 rounded-xl border border-emerald-200/80 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-100">{{ session('status') }}</div>
             @endif
 
-            <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 shadow-xl shadow-slate-900/5 ring-1 ring-slate-900/5 backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/50 dark:ring-white/10">
+            <div class="flow-panel overflow-hidden p-0">
+                <div class="flow-table-wrap">
                 <x-flow.table>
                     <thead class="bg-slate-50/90 text-start text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/80 dark:text-slate-400">
                         <tr>
@@ -144,6 +147,7 @@
                         @endforelse
                     </tbody>
                 </x-flow.table>
+                </div>
             </div>
 
             <div class="mt-6">{{ $providers->links() }}</div>

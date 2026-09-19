@@ -17,8 +17,8 @@
         </div>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-12xl w-full sm:px-6 lg:px-8 space-y-6">
+    <div class="py-8 sm:py-10">
+        <div class="flow-portal-shell !py-0">
             @if (session('status'))
                 <div class="rounded-xl border border-emerald-200/80 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-100">{{ session('status') }}</div>
             @endif
@@ -35,21 +35,23 @@
                                 <p class="mt-1 text-sm text-amber-900/90 dark:text-amber-200/90">{{ __('You must sign the partnership contract before your workspace is fully active. Open the contract in a new tab, sign in the box, and send it.') }}</p>
                             </div>
                         </div>
-                        <div class="flex flex-wrap gap-2">
-                            <a href="{{ route('provider.partnership.contract') }}" target="_blank" rel="noopener noreferrer">
-                                <x-primary-button type="button" class="!bg-amber-700 hover:!bg-amber-800 focus:!ring-amber-500">{{ __('Open contract to sign') }}</x-primary-button>
+                        <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+                            <a href="{{ route('provider.partnership.contract') }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto">
+                                <x-primary-button type="button" class="w-full !bg-amber-700 hover:!bg-amber-800 focus:!ring-amber-500">{{ __('Open contract to sign') }}</x-primary-button>
                             </a>
-                            <a href="{{ route('provider.partnership.show') }}">
-                                <x-secondary-button type="button">{{ __('Partnership details') }}</x-secondary-button>
+                            <a href="{{ route('provider.partnership.show') }}" class="w-full sm:w-auto">
+                                <x-secondary-button type="button" class="w-full">{{ __('Partnership details') }}</x-secondary-button>
                             </a>
                         </div>
                     </div>
                 </div>
             @endif
 
-            <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-br from-indigo-50/80 via-white to-white p-6 shadow-sm dark:border-slate-700/80 dark:from-indigo-950/30 dark:via-slate-900/50 dark:to-slate-900/40">
-                <p class="text-lg font-semibold text-slate-900 dark:text-white">{{ __('provider_welcome', ['name' => $provider->name]) }}</p>
-                <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">{{ __('provider_dashboard_intro') }}</p>
+            <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-flow-surface shadow-sm dark:border-slate-700/80">
+                <div class="flow-portal-hero !rounded-none !border-0 !shadow-none">
+                    <p class="text-lg font-semibold text-flow-text">{{ __('provider_welcome', ['name' => $provider->name]) }}</p>
+                    <p class="mt-2 text-sm text-flow-text-muted">{{ __('provider_dashboard_intro') }}</p>
+                </div>
             </div>
 
             @can('provider.view_commissions')
@@ -158,7 +160,7 @@
                                 @endforelse
                             </ul>
                             <div class="border-t border-slate-200/80 px-5 py-4 dark:border-slate-700/80">
-                                <a href="{{ route('provider.remittance-requests.index') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800/50 dark:bg-indigo-950/40 dark:text-indigo-200">
+                                <a href="{{ route('provider.remittance-requests.index') }}" class="flow-cta-link w-full">
                                     <i class="fa-solid fa-money-bill-transfer text-xs" aria-hidden="true"></i>
                                     {{ __('provider_submit_payment_request') }}
                                 </a>

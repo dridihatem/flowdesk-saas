@@ -13,11 +13,12 @@
     }
     $activeTab = $corporate
         ? 'border-slate-900 bg-slate-900 text-white'
-        : 'border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-600/25';
+        : 'border-transparent text-white shadow-md';
+    $activeTabStyle = $corporate ? '' : 'background-image:linear-gradient(to right,var(--flow-primary),var(--flow-primary-hover));box-shadow:0 10px 22px -12px color-mix(in srgb,var(--flow-primary) 45%,transparent);';
     $inactiveTab = $corporate
         ? 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
         : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500';
-    $panelClass = $corporate ? 'rounded-lg border border-slate-200 bg-white flex flex-col p-6' : 'flow-panel flex flex-col p-6';
+    $panelClass = $corporate ? 'rounded-lg border border-slate-200 bg-white flex flex-col p-5 sm:p-6' : 'flow-panel flex flex-col p-5 sm:p-6';
     $toolbarClass = $corporate
         ? 'rounded-lg border border-slate-200 bg-white p-4'
         : 'rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-slate-700/80 dark:bg-slate-900/50';
@@ -46,7 +47,8 @@
                         :aria-selected="period === 3"
                         @click="setPeriod(3)"
                         :class="period === 3 ? '{{ $activeTab }}' : '{{ $inactiveTab }}'"
-                        class="rounded-md border px-4 py-2.5 text-sm font-semibold transition"
+                        :style="period === 3 ? '{{ $activeTabStyle }}' : ''"
+                        class="min-h-11 flex-1 rounded-md border px-3 py-2.5 text-sm font-semibold transition sm:flex-none sm:px-4"
                     >
                         {{ __('3 months') }}
                     </button>
@@ -56,9 +58,11 @@
                         :aria-selected="period === 6"
                         @click="setPeriod(6)"
                         :class="period === 6 ? '{{ $activeTab }}' : '{{ $inactiveTab }}'"
-                        class="rounded-md border px-4 py-2.5 text-sm font-semibold transition"
+                        :style="period === 6 ? '{{ $activeTabStyle }}' : ''"
+                        class="min-h-11 flex-1 rounded-md border px-3 py-2.5 text-sm font-semibold transition sm:flex-none sm:px-4"
                     >
                         {{ __('6 months') }}
+                        <span class="ms-1 text-[10px] font-bold uppercase opacity-80">−10%</span>
                     </button>
                     <button
                         type="button"
@@ -66,9 +70,11 @@
                         :aria-selected="period === 12"
                         @click="setPeriod(12)"
                         :class="period === 12 ? '{{ $activeTab }}' : '{{ $inactiveTab }}'"
-                        class="rounded-md border px-4 py-2.5 text-sm font-semibold transition"
+                        :style="period === 12 ? '{{ $activeTabStyle }}' : ''"
+                        class="min-h-11 flex-1 rounded-md border px-3 py-2.5 text-sm font-semibold transition sm:flex-none sm:px-4"
                     >
                         {{ __('1 year') }}
+                        <span class="ms-1 text-[10px] font-bold uppercase opacity-80">−20%</span>
                     </button>
                 </div>
             </div>
@@ -108,7 +114,15 @@
                 </div>
                 <p class="mt-2 text-xs text-slate-500">{{ __('Reference monthly') }}: <span class="font-semibold tabular-nums text-slate-800 dark:text-slate-200">{{ number_format((float) $p->price_monthly, 2) }} {{ $p->currency }}</span></p>
 
-                @php($periodFormats = [3 => $periods[3]['formatted'], 6 => $periods[6]['formatted'], 12 => $periods[12]['formatted']])
+                @php
+                    $periodFormats = [3 => $periods[3]['formatted'], 6 => $periods[6]['formatted'], 12 => $periods[12]['formatted']];
+                    $perMonthFormats = [];
+                    foreach ([3, 6, 12] as $m) {
+                        $minor = (int) ($periods[$m]['minor'] ?? 0);
+                        $perMonth = $m > 0 ? (int) round($minor / $m) : 0;
+                        $perMonthFormats[$m] = flowdesk_format_minor($perMonth, $displayCurrency).' '.$displayCurrency;
+                    }
+                @endphp
                 <div class="mt-6 flex-1">
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ __('Total for selected period') }}</p>
                     <p
@@ -116,6 +130,11 @@
                         x-text="({{ json_encode($periodFormats) }})[period] || '—'"
                     >
                         {{ $periodFormats[$periodInitial] }}
+                    </p>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        <span class="font-medium tabular-nums text-slate-700 dark:text-slate-200" x-text="({{ json_encode($perMonthFormats) }})[period] || '—'">{{ $perMonthFormats[$periodInitial] }}</span>
+                        <span>/ {{ __('month') }}</span>
+                        <span class="text-xs">({{ __('effective') }})</span>
                     </p>
                 </div>
 

@@ -65,8 +65,8 @@ While paused, navigation and chat commands are ignored until you resume.
 | **Wake voice reply** (TTS) | **5 credits** | Gemini Flash TTS (default) or OpenAI TTS |
 | **Identity reply** (“Who are you?”) | **Free** | Canned introduction |
 | **Client analysis** (see below) | **Free** | Canned workspace summary |
-| **Assistant chat** | **75 credits** | Per message (`nova_chat`) |
-| **Complete voice briefing** | **15 credits** | Full spoken workspace report (`nova_briefing`) |
+| **Assistant chat** | **100 credits** | Per message (`nova_chat`) — standard reasoning |
+| **Complete voice briefing** | **20 credits** | Full spoken workspace report (`nova_briefing`) |
 
 Voice reply playback usually takes **1–3 seconds** after you say Nova (network + TTS).
 
@@ -276,7 +276,7 @@ Uses AI credits for generation steps; navigation to the quote editor is free.
 
 Example chat questions: monthly revenue, top clients, unpaid invoices, active projects, calendar this week, analyze client Acme Holdings.
 
-Each standard chat message uses **75 AI credits** by default.
+Each standard chat message uses **100 AI credits** by default.
 
 ---
 
