@@ -337,6 +337,12 @@ Route::middleware(['auth', 'verified', 'tenant.match', 'workspace.staff'])->grou
         Route::post('/assistant/voice-workflow', [AiAssistantController::class, 'voiceWorkflow'])->name('assistant.voice-workflow');
         Route::post('/assistant/proposal-prefill', [AiAssistantController::class, 'proposalPrefill'])->name('assistant.proposal-prefill');
         Route::post('/assistant/proposal-client-context', [AiAssistantController::class, 'proposalClientContext'])->name('assistant.proposal-client-context');
+
+        // Nova agent runtime (tool loop + activity stream) — does not replace legacy chat.
+        Route::post('/assistant/agent', [\App\Http\Controllers\Nova\NovaAgentController::class, 'run'])->name('assistant.agent.run');
+        Route::post('/assistant/agent/confirm-plan', [\App\Http\Controllers\Nova\NovaAgentController::class, 'confirmPlan'])->name('assistant.agent.confirm-plan');
+        Route::get('/assistant/agent/runs/{runId}/activities', [\App\Http\Controllers\Nova\NovaAgentController::class, 'activities'])->name('assistant.agent.activities');
+        Route::get('/assistant/agent/autopilot', [\App\Http\Controllers\Nova\NovaAgentController::class, 'autopilotStatus'])->name('assistant.agent.autopilot');
     });
 
     Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');

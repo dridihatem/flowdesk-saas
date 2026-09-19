@@ -32,6 +32,11 @@ class ProjectTask extends Model
             'amount_cents' => 'integer',
             'tracking_started_at' => 'datetime',
             'tracking_accumulated_seconds' => 'integer',
+            'order' => 'integer',
+            'estimated_hours' => 'integer',
+            'source_page' => 'integer',
+            'ai_generated' => 'boolean',
+            'ai_confidence' => 'float',
         ];
     }
 
@@ -83,6 +88,32 @@ class ProjectTask extends Model
         }
 
         return Carbon::today()->isAfter($this->ends_on);
+    }
+
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assignee_id');
+    }
+
+    public function phase(): BelongsTo
+    {
+        return $this->belongsTo(ProjectPhase::class, 'phase_id');
+    }
+
+    public function sourceDocument(): BelongsTo
+    {
+        return $this->belongsTo(ProjectDocument::class, 'source_document_id');
+    }
+
+    public function dependencies(): HasMany
+    {
+        return $this->hasMany(ProjectTaskDependency::class, 'task_id');
+    }
+
+    public function requiredSkills(): HasMany
+    {
+        return $this->hasMany(ProjectTaskSkill::class, 'task_id');
     }
 
     /** Total tracked work seconds (accumulated + current running segment). */

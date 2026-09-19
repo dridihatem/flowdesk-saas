@@ -66,14 +66,23 @@ class SubscriptionTrialService
             return null;
         }
 
-        if ($this->isOnTrial($company)) {
+        // Reuse $sub — avoid N subscription queries from isOnTrial()/trialExpired().
+        $onTrial = $sub->trial_ends_at !== null
+            && $sub->trial_ends_at->isFuture()
+            && in_array($sub->status, ['trialing', 'active'], true);
+
+        if ($onTrial) {
             $trialPlan = Plan::query()->with('limits')->where('slug', $this->trialPlanSlug())->first();
             if ($trialPlan !== null) {
                 return $trialPlan;
             }
         }
 
-        if ($this->trialExpired($company)) {
+        $trialExpired = $sub->trial_ends_at !== null
+            && $sub->trial_ends_at->isPast()
+            && ! $this->hasPaidBilling($company);
+
+        if ($trialExpired) {
             return Plan::query()->with('limits')->where('slug', 'starter')->first()
                 ?? $sub->plan;
         }

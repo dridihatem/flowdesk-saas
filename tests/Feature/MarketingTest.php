@@ -33,11 +33,13 @@ it('shows contact form and accepts valid submission', function () {
         'email' => 'test@example.com',
         'company' => 'Acme',
         'message' => 'Hello from Pest.',
+        ...validMathCaptchaFields('marketing-contact'),
     ])->assertRedirect(route('marketing.contact'))
         ->assertSessionHas('status');
 });
 
 it('validates contact form', function () {
-    $this->post(route('marketing.contact.store'), [])
-        ->assertSessionHasErrors(['name', 'email', 'message']);
+    $this->post(route('marketing.contact.store'), [
+        ...validMathCaptchaFields('marketing-contact'),
+    ])->assertSessionHasErrors(['name', 'email', 'message']);
 });

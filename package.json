@@ -25,6 +25,8 @@
     "dependencies": {
         "chart.js": "^4.5.1",
         "grapesjs": "^0.23.2",
+        "laravel-echo": "^2.5.0",
+        "pusher-js": "^8.6.0",
         "smartwizard": "^7.0.2",
         "sortablejs": "^1.15.7"
     }
