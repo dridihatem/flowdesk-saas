@@ -108,8 +108,9 @@ test('workspace staff profile shows marketing and embed section', function () {
     $response = $this->actingAs($user)->get('/profile');
 
     $response->assertOk();
-    $response->assertSee(__('Marketing & SEO (your website)'));
-    $response->assertSee(__('Open Marketing hub'));
+    $response->assertSee(__('Profile group marketing'));
+    $response->assertSee(__('Company API token (embed)'));
+    $response->assertSee(__('Marketing & SEO'));
 });
 
 test('workspace staff can regenerate embed token from profile', function () {
