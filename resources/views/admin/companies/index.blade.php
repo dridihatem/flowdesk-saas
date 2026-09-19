@@ -1,20 +1,19 @@
 <x-admin-layout>
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <x-flow.page-header
             :title="__('Companies')"
             :description="__('Each company is an isolated workspace: team members manage clients, projects, proposals (quotes), and invoices.')"
+            class="mb-0"
         />
 
-        <a
-            href="{{ route('admin.companies.create') }}"
-            class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700"
-        >
+        <a href="{{ route('admin.companies.create') }}" class="flow-cta-link w-full justify-center sm:w-auto">
             <i class="fa-solid fa-building-circle-plus text-sm" aria-hidden="true"></i>
             <span>{{ __('Create company') }}</span>
         </a>
     </div>
 
-    <div class="flow-panel overflow-hidden p-0">
+    <div class="flow-panel mt-6 overflow-hidden p-0">
+        <div class="flow-table-wrap">
         <x-flow.table>
             <thead class="bg-slate-50/90 text-start text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/80 dark:text-slate-400">
                 <tr>
@@ -48,6 +47,7 @@
                 @endforeach
             </tbody>
         </x-flow.table>
+        </div>
     </div>
     <div class="mt-6">{{ $companies->links() }}</div>
 </x-admin-layout>

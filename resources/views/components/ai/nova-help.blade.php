@@ -1,6 +1,6 @@
 @php
     $brand = (string) config('flowdesk.ai_assistant_brand_name', 'Nova');
-    $creditCost = $creditCost ?? (int) config('flowdesk.ai_task_credits.assistant.modes.nova_chat', 75);
+    $creditCost = $creditCost ?? (int) config('flowdesk.ai_task_credits.assistant.modes.nova_chat', 100);
     $voiceCreditCost = (int) config('flowdesk.ai_task_credits.assistant.modes.nova_voice', 5);
     $briefingCreditCost = (int) config('flowdesk.ai_task_credits.assistant.modes.nova_briefing', 15);
     $askExamples = [

@@ -1,17 +1,27 @@
 @php($flowdeskTheme = $flowdeskTheme ?? [])
 @php($navActive = 'relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition')
 @php($navInactive = 'text-slate-300 hover:bg-white/5 hover:text-white')
-@php($navOn = 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/40 ring-1 ring-white/10')
+@php($navOn = 'bg-flow-primary text-white shadow-lg shadow-slate-950/40 ring-1 ring-white/10')
 @php($iconMuted = 'text-slate-400 group-hover:text-slate-200')
 @php($iconOn = 'text-white')
-<div class="min-h-screen bg-slate-100 text-slate-900">
+<div class="min-h-screen bg-slate-100 text-slate-900" x-data="{ adminNavOpen: false }" @keydown.escape.window="adminNavOpen = false">
+    <div
+        x-show="adminNavOpen"
+        x-cloak
+        x-transition.opacity
+        class="flow-admin-mobile-backdrop lg:hidden"
+        @click="adminNavOpen = false"
+    ></div>
     <div class="flex w-full">
         <aside
-            class="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-e border-slate-800/80 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-6 shadow-xl shadow-slate-950/50 md:flex"
+            class="sticky top-0 z-[60] h-screen w-72 shrink-0 flex-col border-e border-slate-800/80 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-6 shadow-xl shadow-slate-950/50"
+            :class="adminNavOpen ? 'fixed inset-y-0 start-0 flex' : 'hidden lg:flex'"
+            @click.outside="if (window.innerWidth < 1024) adminNavOpen = false"
         >
             <a
                 href="{{ route('admin.dashboard') }}"
                 class="group shrink-0 flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 px-3 py-3 transition hover:bg-white/10"
+                id="admin-platform-nav"
             >
                 @if (! empty($flowdeskTheme['logo_url']))
                     <img src="{{ $flowdeskTheme['logo_url'] }}" alt="" class="h-8 w-auto max-w-[160px] object-contain brightness-0 invert" />
@@ -32,7 +42,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.dashboard') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.dashboard') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.dashboard') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-chart-bar w-4 {{ request()->routeIs('admin.dashboard') ? $iconOn : $iconMuted }}"
@@ -45,7 +55,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.reports.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.reports.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.reports.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-file-lines w-4 {{ request()->routeIs('admin.reports.*') ? $iconOn : $iconMuted }}"
@@ -58,7 +68,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.companies.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.companies.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.companies.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-building w-4 {{ request()->routeIs('admin.companies.*') ? $iconOn : $iconMuted }}"
@@ -71,7 +81,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.plans.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.plans.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.plans.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-credit-card w-4 {{ request()->routeIs('admin.plans.*') ? $iconOn : $iconMuted }}"
@@ -84,7 +94,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.marketplace-modules.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.marketplace-modules.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.marketplace-modules.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-solid fa-puzzle-piece w-4 {{ request()->routeIs('admin.marketplace-modules.*') ? $iconOn : $iconMuted }}"
@@ -97,7 +107,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.marketplace-orders.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.marketplace-orders.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.marketplace-orders.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-solid fa-bag-shopping w-4 {{ request()->routeIs('admin.marketplace-orders.*') ? $iconOn : $iconMuted }}"
@@ -110,7 +120,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.payments.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.payments.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.payments.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-money-bill-1 w-4 {{ request()->routeIs('admin.payments.*') ? $iconOn : $iconMuted }}"
@@ -131,7 +141,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.platform-appearance.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.platform-appearance.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.platform-appearance.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-pen-to-square w-4 {{ request()->routeIs('admin.platform-appearance.*') ? $iconOn : $iconMuted }}"
@@ -144,7 +154,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.themes.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.themes.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.themes.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-solid fa-palette w-4 {{ request()->routeIs('admin.themes.*') ? $iconOn : $iconMuted }}"
@@ -157,7 +167,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.invoice-pdf-templates.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.invoice-pdf-templates.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.invoice-pdf-templates.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-file-pdf w-4 {{ request()->routeIs('admin.invoice-pdf-templates.*') ? $iconOn : $iconMuted }}"
@@ -170,7 +180,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.email-template-models.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.email-template-models.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.email-template-models.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-envelope-open w-4 {{ request()->routeIs('admin.email-template-models.*') ? $iconOn : $iconMuted }}"
@@ -183,7 +193,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.payment-gateways.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.payment-gateways.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.payment-gateways.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-solid fa-plug-circle-bolt w-4 {{ request()->routeIs('admin.payment-gateways.*') ? $iconOn : $iconMuted }}"
@@ -196,7 +206,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.platform-settings.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.platform-settings.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.platform-settings.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-solid fa-sliders w-4 {{ request()->routeIs('admin.platform-settings.*') ? $iconOn : $iconMuted }}"
@@ -209,7 +219,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.developer-docs.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.developer-docs.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.developer-docs.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-solid fa-book w-4 {{ request()->routeIs('admin.developer-docs.*') ? $iconOn : $iconMuted }}"
@@ -222,7 +232,7 @@
                         class="{{ $navActive }} {{ request()->routeIs('admin.profile.*') ? $navOn : $navInactive }} group"
                     >
                         <span
-                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-emerald-400 {{ request()->routeIs('admin.profile.*') ? 'opacity-100' : 'opacity-0' }}"
+                            class="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e-full bg-teal-300 {{ request()->routeIs('admin.profile.*') ? 'opacity-100' : 'opacity-0' }}"
                         ></span>
                         <i
                             class="fa-regular fa-user w-4 {{ request()->routeIs('admin.profile.*') ? $iconOn : $iconMuted }}"
@@ -278,7 +288,7 @@
 
         <div class="min-w-0 flex-1">
             <div
-                class="hidden items-center justify-between gap-3 border-b border-slate-200/90 bg-white/95 px-4 py-3 shadow-sm backdrop-blur md:flex"
+                class="hidden items-center justify-between gap-3 border-b border-slate-200/90 bg-white/95 px-4 py-3 shadow-sm backdrop-blur lg:flex"
             >
                 <div class="text-xs font-semibold uppercase tracking-widest text-slate-400">{{ __('Platform admin') }}</div>
                 <div class="flex items-center gap-2">
@@ -309,15 +319,24 @@
                 </div>
             </div>
             <div
-                class="flex items-center justify-between border-b border-slate-200/90 bg-white/95 px-4 py-4 shadow-sm backdrop-blur md:hidden"
+                class="flex items-center justify-between gap-3 border-b border-slate-200/90 bg-white/95 px-4 py-3 shadow-sm backdrop-blur lg:hidden"
             >
-                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2">
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex min-w-0 items-center gap-2">
                     <x-application-logo class="!gap-2" :tagline="false" />
                 </a>
-                <a href="{{ route('admin.companies.index') }}" class="text-sm font-semibold text-slate-700 hover:text-slate-900">{{ __('Menu') }} →</a>
+                <button
+                    type="button"
+                    class="flow-cta-link !min-h-10 !px-3 !text-xs"
+                    @click="adminNavOpen = !adminNavOpen"
+                    :aria-expanded="adminNavOpen.toString()"
+                    aria-controls="admin-platform-nav"
+                >
+                    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                    <span>{{ __('Menu') }}</span>
+                </button>
             </div>
 
-            <div class="px-4 py-10 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
                 @if (! empty($flowdeskBreadcrumbs ?? []))
                     <div class="mb-6">
                         <x-flow.breadcrumb-bar :items="$flowdeskBreadcrumbs" :back="$flowdeskBreadcrumbBack ?? null" />
@@ -326,7 +345,7 @@
                 @if (session('status'))
                     <div class="mb-6 rounded-xl border border-emerald-200/80 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{{ session('status') }}</div>
                 @endif
-                <div class="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-slate-900/5 ring-1 ring-slate-900/[0.04] sm:p-8">
+                <div class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xl shadow-slate-900/5 ring-1 ring-slate-900/[0.04] sm:rounded-3xl sm:p-6 lg:p-8">
                     {{ $slot }}
                 </div>
             </div>

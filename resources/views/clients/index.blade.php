@@ -13,30 +13,30 @@
                 <div class="mb-6 rounded-xl border border-emerald-200/80 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-100">{{ session('status') }}</div>
             @endif
 
-            <div class="mb-6 flex flex-wrap items-center justify-end gap-2">
+            <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
                 @can('workspace.manage_clients')
-                    <a href="{{ route('clients.account-requests.index') }}">
-                        <x-secondary-button type="button" class="!normal-case inline-flex items-center gap-2">
+                    <a href="{{ route('clients.account-requests.index') }}" class="w-full sm:w-auto">
+                        <x-secondary-button type="button" class="!normal-case inline-flex w-full items-center justify-center gap-2 sm:w-auto">
                             <i class="fa-solid fa-inbox text-sm" aria-hidden="true"></i>
                             {{ __('Client signup requests') }}
                         </x-secondary-button>
                     </a>
                 @endcan
-                <a href="{{ route('clients.create') }}">
-                    <x-primary-button type="button" class="!normal-case inline-flex items-center gap-2">
+                <a href="{{ route('clients.create') }}" class="w-full sm:w-auto">
+                    <x-primary-button type="button" class="!normal-case inline-flex w-full items-center justify-center gap-2 sm:w-auto">
                         <i class="fa-solid fa-user-plus text-sm" aria-hidden="true"></i>
                         {{ __('Add client') }}
                     </x-primary-button>
                 </a>
             </div>
 
-            <div class="flow-panel mb-8 p-6 sm:p-8">
-                <form method="GET" action="{{ route('clients.index') }}" class="flex flex-wrap items-end gap-3">
+            <div class="flow-panel mb-8 p-4 sm:p-6 lg:p-8">
+                <form method="GET" action="{{ route('clients.index') }}" class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
                     <div class="min-w-0 flex-1 sm:max-w-md">
                         <x-input-label for="client_q" :value="__('Search')" />
                         <x-text-input id="client_q" name="q" type="search" :value="$q" class="mt-1 block w-full" placeholder="{{ __('Search name or email…') }}" />
                     </div>
-                    <x-secondary-button type="submit" class="inline-flex items-center gap-2">
+                    <x-secondary-button type="submit" class="inline-flex w-full items-center justify-center gap-2 sm:w-auto">
                         <i class="fa-solid fa-magnifying-glass text-xs" aria-hidden="true"></i>
                         {{ __('Search') }}
                     </x-secondary-button>
@@ -44,6 +44,7 @@
             </div>
 
             <div class="flow-panel overflow-hidden p-0">
+                <div class="flow-table-wrap">
                 <x-flow.table>
                     <thead class="bg-slate-50/90 text-start text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/80 dark:text-slate-400">
                         <tr>
@@ -64,9 +65,9 @@
                             @endphp
                             <tr class="transition hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                                 <td class="px-4 py-3 font-medium text-start">
-                                    <a href="{{ route('clients.show', $client) }}" class="text-indigo-700 hover:underline dark:text-indigo-300">{{ $client->name }}</a>
+                                    <a href="{{ route('clients.show', $client) }}" class="font-medium text-flow-primary hover:underline">{{ $client->name }}</a>
                                 </td>
-                                <td class="px-4 py-3 font-mono text-sm text-indigo-700 dark:text-indigo-300 text-start">{{ $client->code ?? '—' }}</td>
+                                <td class="px-4 py-3 font-mono text-sm text-flow-primary text-start">{{ $client->code ?? '—' }}</td>
                                 <td class="px-4 py-3 text-sm text-start">{{ $client->email ?? '—' }}</td>
                                 <td class="px-4 py-3 text-sm text-start"><span class="flowdesk-ltr-num tabular-nums">{{ $client->phone ?? '—' }}</span></td>
                                 <td class="px-4 py-3 text-sm text-start">
@@ -142,6 +143,7 @@
                         @endforelse
                     </tbody>
                 </x-flow.table>
+                </div>
             </div>
 
             <div class="mt-6">

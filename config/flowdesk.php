@@ -381,52 +381,54 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | AI task credits (plan quota): fixed cost per task by complexity
+    | AI / Nova reasoning credits (plan quota)
     |--------------------------------------------------------------------------
-    | Each AI action bills a flat number of credits from the workspace monthly quota.
-    | Assistant modes can override the assistant.default cost.
+    | Flat cost per action from the workspace monthly quota.
+    | Light (voice) < standard chat/writing < deep reasoning (growth, counsel, scans).
+    | Assistant modes override assistant.default when set.
     */
     'ai_task_credits' => [
         'assistant' => [
-            'default' => 50,
+            'default' => 60,
             'modes' => [
-                'proposal' => 80,
-                'pricing' => 80,
-                'form' => 60,
-                'summary' => 50,
-                'ticket' => 40,
-                'client_email' => 60,
-                'task_followup' => 50,
-                'seo' => 100,
-                'project_description' => 80,
-                'growth_projects' => 100,
-                'growth_invoices' => 100,
-                'growth_clients' => 100,
-                'report_counsel' => 100,
+                'proposal' => 90,
+                'pricing' => 90,
+                'form' => 70,
+                'summary' => 60,
+                'ticket' => 50,
+                'client_email' => 70,
+                'task_followup' => 60,
+                'seo' => 110,
+                'project_description' => 90,
+                'growth_projects' => 125,
+                'growth_invoices' => 125,
+                'growth_clients' => 125,
+                'report_counsel' => 125,
                 'landing_page' => 150,
-                'nova_chat' => 75,
+                'nova_chat' => 100,
                 'nova_voice' => 5,
-                'nova_briefing' => 15,
+                'nova_briefing' => 20,
             ],
         ],
-        'report_counsel' => 100,
-        'project_workflow' => 150,
+        'report_counsel' => 125,
+        'project_workflow' => 160,
         'project_example_workspace' => 250,
-        'email_template' => 120,
-        'email_campaign_content' => 150,
-        'quote_line_items' => 120,
-        'invoice_line_items' => 120,
-        'quote_line_items_scan' => 150,
-        'invoice_line_items_scan' => 150,
+        'email_template' => 130,
+        'email_campaign_content' => 160,
+        'quote_line_items' => 130,
+        'invoice_line_items' => 130,
+        'quote_line_items_scan' => 160,
+        'invoice_line_items_scan' => 160,
     ],
 
     /*
     |--------------------------------------------------------------------------
     | Pay-per-use (estimated charges; configure settlement in your billing process)
     |--------------------------------------------------------------------------
+    | ai_credit_price_minor = cents (USD) per credit when estimating overage.
     */
     'pay_per_use' => [
-        'ai_credit_price_minor' => (int) env('FLOWDESK_AI_CREDIT_PRICE_MINOR', 1),
+        'ai_credit_price_minor' => (int) env('FLOWDESK_AI_CREDIT_PRICE_MINOR', 2),
     ],
 
     'font_urls' => [

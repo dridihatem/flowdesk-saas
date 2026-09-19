@@ -12,8 +12,8 @@
     <div class="py-10">
         <div class="max-w-12xl w-full sm:px-6 lg:px-8 space-y-6">
             <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-slate-700/80 dark:bg-slate-900/40">
-                <div class="border-b border-slate-200/80 bg-gradient-to-r from-indigo-50/80 via-white to-white px-5 py-4 dark:border-slate-700/80 dark:from-indigo-950/30 dark:via-slate-900/50 dark:to-slate-900/40">
-                    <p class="text-sm text-slate-600 dark:text-slate-300">{{ __('portal_projects_intro') }}</p>
+                <div class="flow-portal-hero !rounded-none !border-0 !shadow-none border-b border-flow-border">
+                    <p class="text-sm text-flow-text-muted">{{ __('portal_projects_intro') }}</p>
                 </div>
 
                 <div class="border-b border-slate-200/80 px-5 py-4 dark:border-slate-700/80">
@@ -69,7 +69,7 @@
                                 @endphp
                                 <tr class="transition hover:bg-slate-50/60 dark:hover:bg-slate-800/30">
                                     <td class="px-5 py-4 text-start">
-                                        <a href="{{ route('portal.projects.show', $project) }}" class="font-semibold text-slate-900 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-400">{{ $project->title }}</a>
+                        <a href="{{ route('portal.projects.show', $project) }}" class="font-semibold text-flow-text hover:text-flow-primary">{{ $project->title }}</a>
                                     </td>
                                     <td class="px-5 py-4 text-start">
                                         @if ($project->status)
@@ -82,7 +82,7 @@
                                         @if ($taskTotal > 0)
                                             <div class="flex min-w-[7rem] items-center gap-2">
                                                 <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                                                    <div class="h-full rounded-full bg-indigo-600 dark:bg-indigo-400" style="width: {{ $pct }}%"></div>
+                                                    <div class="h-full rounded-full" style="width: {{ $pct }}%; background-color: var(--flow-primary)"></div>
                                                 </div>
                                                 <span class="shrink-0 text-xs tabular-nums text-slate-500">{{ $pct }}%</span>
                                             </div>
