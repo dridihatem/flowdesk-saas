@@ -320,6 +320,12 @@ return [
     'nova_autopilot_enabled' => (bool) env('FLOWDESK_NOVA_AUTOPILOT_ENABLED', false),
 
     /*
+    | When true, Nova assistant UI + top-bar voice use POST /assistant/agent
+    | (orchestrator) as the primary path, with legacy /assistant/chat fallback.
+    */
+    'nova_agent_ui_enabled' => (bool) env('FLOWDESK_NOVA_AGENT_UI_ENABLED', true),
+
+    /*
     |--------------------------------------------------------------------------
     | Dashboard widgets (keys map to resources/views/dashboard/widgets/*.blade.php)
     |--------------------------------------------------------------------------

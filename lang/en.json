@@ -3383,5 +3383,10 @@
     "— None —": "— None —",
     "— Optional —": "— Optional —",
     "— Select code —": "— Select code —",
-    "— Select country —": "— Select country —"
+    "— Select country —": "— Select country —",
+    "nova_activity_title": "Activity",
+    "nova_clarify_prompt": "Which one did you mean?",
+    "nova_confirm_prompt": "Confirm this action?",
+    "nova_confirm_action": "Confirm",
+    "nova_cancel_action": "Cancel"
 }

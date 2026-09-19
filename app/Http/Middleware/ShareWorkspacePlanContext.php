@@ -10,6 +10,7 @@ use App\Services\NovaVoiceNavigationService;
 use App\Services\PlanLimitService;
 use App\Services\SubscriptionTrialService;
 use App\Services\WorkspaceCalendarService;
+use App\Support\NovaPageContext;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -30,6 +31,7 @@ class ShareWorkspacePlanContext
         ];
         View::share('flowdeskInstalledModules', []);
         View::share('flowdeskNovaVoiceNav', ['enabled' => false]);
+        View::share('flowdeskNovaPageContext', NovaPageContext::clientPayload($request));
 
         if ($user?->company && $user->hasAnyRole(['company_admin', 'team_member'])) {
             $limits = app(PlanLimitService::class);

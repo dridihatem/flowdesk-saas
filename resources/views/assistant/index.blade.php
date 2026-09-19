@@ -3,6 +3,12 @@
     $novaPayload = [
         'assistant_name' => $assistantName,
         'chat_url' => $chatUrl,
+        'agent_url' => $agentUrl ?? route('assistant.agent.run'),
+        'legacy_chat_url' => $legacyChatUrl ?? $chatUrl,
+        'use_agent' => $useAgent ?? (bool) config('flowdesk.nova_agent_ui_enabled', true),
+        'current_page' => $flowdeskNovaPageContext['current_page'] ?? 'assistant.index',
+        'current_entity' => $flowdeskNovaPageContext['current_entity'] ?? null,
+        'company_id' => (string) (auth()->user()?->company_id ?? ''),
         'credit_cost' => $creditCost,
         'summary' => $summary,
         'assistant_url' => route('assistant.index'),

@@ -8,7 +8,7 @@
     </div>
 
     <div class="flex-1 space-y-3 overflow-y-auto bg-white p-4" x-ref="chatScroll">
-        <template x-if="messages.length === 0">
+        <template x-if="messages.length === 0 && activities.length === 0">
             <p class="text-sm text-slate-500">{{ __('nova_chat_empty') }}</p>
         </template>
         <template x-for="(msg, idx) in messages" :key="idx">
@@ -22,6 +22,65 @@
                 <p class="whitespace-pre-wrap text-slate-900" x-text="displayMessage(msg.content)"></p>
             </div>
         </template>
+
+        <div
+            x-show="activities.length > 0"
+            x-cloak
+            class="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2"
+        >
+            <p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500" x-text="labels.activityTitle || @js(__('nova_activity_title'))"></p>
+            <ul class="space-y-1.5">
+                <template x-for="(act, aidx) in activities" :key="act.id || aidx">
+                    <li class="flex items-start gap-2 text-xs text-slate-700">
+                        <span
+                            class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full"
+                            :class="act.status === 'done' ? 'bg-emerald-500' : 'bg-sky-500 animate-pulse'"
+                        ></span>
+                        <span x-text="act.message"></span>
+                    </li>
+                </template>
+            </ul>
+        </div>
+
+        <div
+            x-show="clarificationOptions && clarificationOptions.length"
+            x-cloak
+            class="space-y-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3"
+        >
+            <p class="text-xs font-semibold text-amber-900">{{ __('nova_clarify_prompt') }}</p>
+            <div class="flex flex-wrap gap-2">
+                <template x-for="(opt, oidx) in (clarificationOptions || [])" :key="opt.id || oidx">
+                    <button
+                        type="button"
+                        class="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
+                        x-on:click="chooseClarification(opt)"
+                        x-text="opt.label || opt.id"
+                    ></button>
+                </template>
+            </div>
+        </div>
+
+        <div
+            x-show="pendingConfirmation"
+            x-cloak
+            class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-3"
+        >
+            <p class="text-xs font-semibold text-rose-900" x-text="pendingConfirmation?.message || @js(__('nova_confirm_prompt'))"></p>
+            <div class="mt-2 flex flex-wrap gap-2">
+                <button
+                    type="button"
+                    class="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-500"
+                    x-on:click="confirmPendingAction(true)"
+                    x-text="labels.confirm || @js(__('nova_confirm_action'))"
+                ></button>
+                <button
+                    type="button"
+                    class="rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-semibold text-rose-800 hover:bg-rose-100"
+                    x-on:click="confirmPendingAction(false)"
+                    x-text="labels.cancel || @js(__('nova_cancel_action'))"
+                ></button>
+            </div>
+        </div>
     </div>
 
     <div class="border-t border-slate-200 bg-white p-3">

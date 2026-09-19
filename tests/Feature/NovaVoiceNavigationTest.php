@@ -29,6 +29,9 @@ test('nova voice nav config includes invoice commands for authorized user', func
     expect($config['enabled'])->toBeTrue();
     expect($config['brand'])->toBe('Nova');
     expect($config['chatUrl'])->toBe(route('assistant.chat'));
+    expect($config['agentUrl'])->toBe(route('assistant.agent.run'));
+    expect($config['legacyChatUrl'])->toBe(route('assistant.chat'));
+    expect($config['useAgent'])->toBeTrue();
     expect($config['labels']['chatListening'])->toBe(__('nova_voice_chat_listening'));
     expect($config['labels']['alwaysOn'])->toBe(__('nova_voice_toujours_activee', ['name' => 'Nova']));
 

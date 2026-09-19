@@ -16,6 +16,12 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        @isset($flowdeskNovaPageContext)
+            <script>
+                window.flowdeskNovaPageContext = @js($flowdeskNovaPageContext);
+            </script>
+        @endisset
+
         @include('partials.theme-variables', ['flowdeskTheme' => $flowdeskTheme])
         @stack('styles')
     </head>

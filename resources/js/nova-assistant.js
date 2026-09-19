@@ -21,12 +21,20 @@ import {
     flowdeskNovaResolveWakeReply,
     flowdeskNovaWakeReplyStorageKey,
 } from './nova-voice-speak';
+import { flowdeskNovaResolvePageContext, flowdeskNovaSendMessage } from './nova/agent-client';
+import { subscribeNovaCompanyActivity, subscribeNovaRunActivity } from './nova/activity-stream';
 
 export function registerNovaAssistant(Alpine) {
     const novaAssistantFactory = (cfg = {}) => ({
         assistantName: cfg.assistantName || 'Nova',
         wakeBrand: cfg.wakeBrand || 'Nova',
         chatUrl: cfg.chatUrl || '',
+        agentUrl: cfg.agentUrl || null,
+        legacyChatUrl: cfg.legacyChatUrl || cfg.chatUrl || null,
+        useAgent: cfg.useAgent !== false,
+        currentPage: cfg.currentPage || null,
+        currentEntity: cfg.currentEntity || null,
+        companyId: cfg.companyId || '',
         speakUrl: cfg.speakUrl || null,
         creditCost: cfg.creditCost || 0,
         csrf: cfg.csrf || '',
@@ -45,6 +53,10 @@ export function registerNovaAssistant(Alpine) {
         transcript: '',
         draft: '',
         messages: [],
+        activities: [],
+        pendingConfirmation: null,
+        clarificationOptions: null,
+        lastRunId: null,
         conversationId: null,
         lastReply: '',
         error: '',
@@ -58,6 +70,8 @@ export function registerNovaAssistant(Alpine) {
         _awaitingQuestion: false,
         _chatAbort: null,
         _listenForStop: false,
+        _unsubscribeRun: null,
+        _unsubscribeCompany: null,
         enableWakeWord: false,
         wakeReplyStorageKey: '',
 
@@ -104,6 +118,11 @@ export function registerNovaAssistant(Alpine) {
             if (this.wakeMode && this.state === 'idle') {
                 return this.labels.wake || this.labels.idle || '';
             }
+            if (this.activities.length > 0 && this.state === 'thinking') {
+                const latest = this.activities[this.activities.length - 1];
+
+                return latest?.message || this.labels.thinking || '';
+            }
 
             return this.labels[this.state] || this.labels.idle || '';
         },
@@ -130,6 +149,10 @@ export function registerNovaAssistant(Alpine) {
             this.wakePhrases = flowdeskVellisWakePhrases(this.assistantName, this.wakeBrand, this.appLocale);
             this.stopPhrases = flowdeskNovaStopPhrases(this.wakeBrand, this.appLocale);
 
+            const pageCtx = flowdeskNovaResolvePageContext(cfg);
+            this.currentPage = pageCtx.currentPage;
+            this.currentEntity = pageCtx.currentEntity;
+
             this.$el.addEventListener('nova-ask-example', (event) => {
                 this.askExample(event.detail || '');
             });
@@ -141,6 +164,14 @@ export function registerNovaAssistant(Alpine) {
             this._onNovaStop = () => this.applyNovaStopState();
             document.addEventListener('flowdesk-nova-stop', this._onNovaStop);
 
+            if (this.companyId && typeof subscribeNovaCompanyActivity === 'function') {
+                this._unsubscribeCompany = subscribeNovaCompanyActivity(this.companyId, (payload) => {
+                    if (payload?.run_id && this.lastRunId && payload.run_id === this.lastRunId) {
+                        this.pushActivity(payload);
+                    }
+                });
+            }
+
             this.$nextTick(() => this.initNeuralBackground(cfg.compact));
             this.$watch('neuralEnergy', (value) => {
                 this._neuralBg?.setEnergy(value);
@@ -149,6 +180,10 @@ export function registerNovaAssistant(Alpine) {
             const cleanup = () => {
                 this._neuralBg?.destroy();
                 this.stopRecognition();
+                this.teardownRunSubscription();
+                if (typeof this._unsubscribeCompany === 'function') {
+                    this._unsubscribeCompany();
+                }
                 document.removeEventListener('flowdesk-nova-stop', this._onNovaStop);
                 window.removeEventListener('nova-ask-example', this._onAskExampleWindow);
             };
@@ -293,11 +328,51 @@ export function registerNovaAssistant(Alpine) {
             return flowdeskMatchesStopPhrase(text, this.stopPhrases);
         },
 
+        teardownRunSubscription() {
+            if (typeof this._unsubscribeRun === 'function') {
+                this._unsubscribeRun();
+            }
+            this._unsubscribeRun = null;
+        },
+
+        bindRunActivity(runId) {
+            this.teardownRunSubscription();
+            this.lastRunId = runId || null;
+            if (!runId || typeof subscribeNovaRunActivity !== 'function') {
+                return;
+            }
+            this._unsubscribeRun = subscribeNovaRunActivity(runId, (payload) => {
+                this.pushActivity(payload);
+            });
+        },
+
+        pushActivity(payload) {
+            if (!payload || !payload.message) {
+                return;
+            }
+            const id = payload.id || `${payload.type || 'act'}-${this.activities.length}`;
+            const existing = this.activities.findIndex((a) => a.id === id);
+            const row = {
+                id,
+                type: payload.type || 'thinking',
+                status: payload.status || 'running',
+                message: payload.message,
+                tool_name: payload.tool_name || null,
+            };
+            if (existing >= 0) {
+                this.activities.splice(existing, 1, row);
+            } else {
+                this.activities.push(row);
+            }
+            this.scrollChat();
+        },
+
         applyNovaStopState() {
             this.speaking = false;
             this.speakingText = '';
             this._awaitingQuestion = false;
             this._listenForStop = false;
+            this.teardownRunSubscription();
             if (this._chatAbort) {
                 try {
                     this._chatAbort.abort();
@@ -509,7 +584,7 @@ export function registerNovaAssistant(Alpine) {
             this.startRecognition(true);
         },
 
-        async submitMessage() {
+        async submitMessage(extra = {}) {
             const text = (this.draft || this.transcript || '').trim();
             if (!text || this.state === 'thinking') {
                 return;
@@ -521,9 +596,14 @@ export function registerNovaAssistant(Alpine) {
 
             this.wakeMode = false;
             this.error = '';
-            const viaVoice = Boolean((this.transcript || '').trim());
+            this.activities = [];
+            this.pendingConfirmation = null;
+            this.clarificationOptions = null;
+            const viaVoice = Boolean((this.transcript || '').trim()) || Boolean(extra.viaVoice);
             this.state = 'thinking';
-            this.messages.push({ role: 'user', content: text });
+            if (!extra.skipUserBubble) {
+                this.messages.push({ role: 'user', content: text });
+            }
             this.scrollChat();
 
             if (this._chatAbort) {
@@ -536,29 +616,49 @@ export function registerNovaAssistant(Alpine) {
             this._chatAbort = new AbortController();
 
             try {
-                const res = await fetch(this.chatUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': this.csrf,
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: text,
-                        conversation_id: this.conversationId,
-                    }),
+                const pageCtx = flowdeskNovaResolvePageContext({
+                    currentPage: this.currentPage,
+                    currentEntity: this.currentEntity,
+                });
+
+                const result = await flowdeskNovaSendMessage({
+                    message: text,
+                    conversationId: this.conversationId,
+                    agentUrl: this.agentUrl,
+                    legacyChatUrl: this.legacyChatUrl || this.chatUrl,
+                    useAgent: this.useAgent,
+                    currentPage: pageCtx.currentPage,
+                    currentEntity: pageCtx.currentEntity,
+                    confirmation: extra.confirmation || null,
+                    csrf: this.csrf,
                     signal: this._chatAbort.signal,
                 });
 
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) {
-                    throw new Error(flowdeskFetchErrorMessage(res, data, this.labels.requestFailed));
+                if (!result.ok) {
+                    throw new Error(flowdeskFetchErrorMessage(
+                        { ok: false, status: result.status },
+                        result.data,
+                        this.labels.requestFailed,
+                    ));
+                }
+
+                const data = result.data;
+                if (data.run_id) {
+                    this.bindRunActivity(data.run_id);
+                    (data.activities || []).forEach((a) => this.pushActivity(a));
                 }
 
                 this.state = 'responding';
                 this.lastReply = data.reply || '';
                 this.conversationId = data.conversation_id || this.conversationId;
-                this.messages.push({ role: 'assistant', content: this.lastReply });
+                this.pendingConfirmation = data.confirmation
+                    ? { ...data.confirmation, message: data.reply || data.confirmation.message || null }
+                    : null;
+                this.clarificationOptions = data.clarification_options || null;
+
+                if (this.lastReply) {
+                    this.messages.push({ role: 'assistant', content: this.lastReply });
+                }
                 this.transcript = '';
                 this.draft = '';
                 this.scrollChat();
@@ -591,7 +691,34 @@ export function registerNovaAssistant(Alpine) {
                 }
             } finally {
                 this._chatAbort = null;
+                this.teardownRunSubscription();
             }
+        },
+
+        async confirmPendingAction(confirmed) {
+            if (!this.pendingConfirmation) {
+                return;
+            }
+            const confirmation = {
+                confirmed: Boolean(confirmed),
+                tool: this.pendingConfirmation.tool,
+                arguments: this.pendingConfirmation.arguments || {},
+            };
+            this.pendingConfirmation = null;
+            this.draft = confirmed ? 'confirm' : 'cancel';
+            this.transcript = '';
+            await this.submitMessage({ confirmation, skipUserBubble: false });
+        },
+
+        async chooseClarification(option) {
+            const label = option?.label || option?.id || '';
+            if (!label) {
+                return;
+            }
+            this.clarificationOptions = null;
+            this.draft = String(label);
+            this.transcript = '';
+            await this.submitMessage();
         },
 
         speakReply() {
@@ -642,6 +769,9 @@ export function registerNovaAssistant(Alpine) {
         loadConversation(id) {
             this.conversationId = id;
             this.messages = [];
+            this.activities = [];
+            this.pendingConfirmation = null;
+            this.clarificationOptions = null;
             this.transcript = '';
             this.draft = '';
             this.lastReply = '';

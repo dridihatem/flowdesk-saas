@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Support\NovaPageContext;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Route;
 
@@ -224,11 +225,14 @@ class NovaVoiceNavigationService
             'nova_chat',
         );
 
+        $pageContext = NovaPageContext::clientPayload();
+
         return [
             'enabled' => (bool) ($gates['ai_credits'] ?? false),
             'brand' => $brand,
             'userName' => $firstName,
             'userId' => (string) $user->id,
+            'companyId' => (string) ($user->company_id ?? ''),
             'companyName' => $companyName,
             'voiceCreditCost' => $voiceCredits,
             'briefingCreditCost' => $briefingCredits,
@@ -237,6 +241,11 @@ class NovaVoiceNavigationService
             'speechLocale' => flowdesk_speech_recognition_locale(),
             'speakUrl' => route('assistant.speak'),
             'chatUrl' => route('assistant.chat'),
+            'agentUrl' => route('assistant.agent.run'),
+            'legacyChatUrl' => route('assistant.chat'),
+            'useAgent' => (bool) config('flowdesk.nova_agent_ui_enabled', true),
+            'currentPage' => $pageContext['current_page'],
+            'currentEntity' => $pageContext['current_entity'],
             'briefingUrl' => route('assistant.briefing'),
             'briefingRedirectUrl' => null,
             'tts' => $tts,
