@@ -44,15 +44,21 @@ test('company user can open nova assistant page', function () {
         ->assertOk()
         ->assertSee($user->company->name.' Nova')
         ->assertSee('x-data="novaAssistant', false)
+        ->assertSee('nova-neural-stage', false)
+        ->assertSee('data-nova-neural-canvas', false)
         ->assertSee(__('nova_help_title'))
         ->assertSee('nova-ask-example', false)
         ->assertSee(__('nova_tab_writing'))
         ->assertSee(__('ai_writing_mode_proposal_title'))
         ->assertSee(__('ai_writing_mode_pricing_title'))
         ->assertDontSee(__('ai_writing_mode_landing_page_title'))
-        ->assertSee('aiWritingModes', false);
+        ->assertSee('aiWritingModes', false)
+        // Alpine @js() wraps config in JSON.parse('…') with hex/slash escapes —
+        // assert keys the same way as NovaUiAgentWiringTest (not raw paths).
+        ->assertSee('agentUrl', false)
+        ->assertSee('legacyChatUrl', false)
+        ->assertSee('useAgent', false);
 });
-
 test('assistant hash mode=proposal opens writing tab with proposal mode', function () {
     $user = User::factory()->create();
 

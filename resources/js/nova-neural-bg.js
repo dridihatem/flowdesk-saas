@@ -1,5 +1,6 @@
 /**
  * Lightweight canvas neural-network / data-flow background for Nova assistant cards.
+ * Prefer cyan / teal data-flow hues; when fullscreen, denser field for Jarvis-style immersion.
  */
 
 function createNodes(count, width, height) {
@@ -18,10 +19,36 @@ function createNodes(count, width, height) {
     return nodes;
 }
 
+function readAccentRgb() {
+    try {
+        const raw = getComputedStyle(document.documentElement).getPropertyValue('--flow-primary').trim();
+        if (!raw) {
+            return { r: 14, g: 165, b: 233 };
+        }
+        const hex = raw.replace('#', '');
+        if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+            return {
+                r: parseInt(hex.slice(0, 2), 16),
+                g: parseInt(hex.slice(2, 4), 16),
+                b: parseInt(hex.slice(4, 6), 16),
+            };
+        }
+        const rgb = raw.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+        if (rgb) {
+            return { r: Number(rgb[1]), g: Number(rgb[2]), b: Number(rgb[3]) };
+        }
+    } catch {
+        // fall through
+    }
+
+    return { r: 14, g: 165, b: 233 };
+}
+
 export function initNovaNeuralBackground(canvas, options = {}) {
     const compact = Boolean(options.compact);
-    const nodeCount = compact ? 16 : 26;
-    const linkDistance = compact ? 88 : 118;
+    const fullscreen = Boolean(options.fullscreen);
+    const nodeCount = compact ? 16 : (fullscreen ? 48 : 26);
+    const linkDistance = compact ? 88 : (fullscreen ? 140 : 118);
     const ctx = canvas.getContext('2d');
     if (!ctx) {
         return { destroy() {} };
@@ -33,6 +60,9 @@ export function initNovaNeuralBackground(canvas, options = {}) {
     let frameId = null;
     let running = true;
     let energy = 1;
+    const accent = readAccentRgb();
+    // Soft cyan companion so company primary tints without purple AI slop
+    const companion = { r: 56, g: 189, b: 248 };
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const resize = () => {
@@ -43,7 +73,7 @@ export function initNovaNeuralBackground(canvas, options = {}) {
         canvas.width = Math.floor(width * dpr);
         canvas.height = Math.floor(height * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        if (nodes.length === 0) {
+        if (nodes.length === 0 || fullscreen) {
             nodes = createNodes(nodeCount, width, height);
         }
     };
@@ -75,7 +105,7 @@ export function initNovaNeuralBackground(canvas, options = {}) {
             Math.max(width, height) * 0.75,
         );
         vignette.addColorStop(0, 'rgba(15, 23, 42, 0)');
-        vignette.addColorStop(1, 'rgba(2, 6, 23, 0.55)');
+        vignette.addColorStop(1, fullscreen ? 'rgba(2, 6, 23, 0.72)' : 'rgba(2, 6, 23, 0.55)');
         ctx.fillStyle = vignette;
         ctx.fillRect(0, 0, width, height);
 
@@ -107,9 +137,9 @@ export function initNovaNeuralBackground(canvas, options = {}) {
                     continue;
                 }
 
-                const alpha = (1 - dist / linkDistance) * (0.22 + energy * 0.12);
-                ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
-                ctx.lineWidth = 0.8;
+                const alpha = (1 - dist / linkDistance) * (0.18 + energy * 0.14);
+                ctx.strokeStyle = `rgba(${companion.r}, ${companion.g}, ${companion.b}, ${alpha})`;
+                ctx.lineWidth = fullscreen ? 1 : 0.8;
                 ctx.beginPath();
                 ctx.moveTo(a.x, a.y);
                 ctx.lineTo(b.x, b.y);
@@ -119,9 +149,9 @@ export function initNovaNeuralBackground(canvas, options = {}) {
                     const flow = (t * (0.8 + energy) + i * 0.3 + j * 0.17) % 1;
                     const px = a.x + (b.x - a.x) * flow;
                     const py = a.y + (b.y - a.y) * flow;
-                    ctx.fillStyle = `rgba(129, 140, 248, ${alpha + 0.25})`;
+                    ctx.fillStyle = `rgba(${accent.r}, ${accent.g}, ${accent.b}, ${alpha + 0.28})`;
                     ctx.beginPath();
-                    ctx.arc(px, py, 1.1, 0, Math.PI * 2);
+                    ctx.arc(px, py, fullscreen ? 1.35 : 1.1, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
@@ -133,8 +163,8 @@ export function initNovaNeuralBackground(canvas, options = {}) {
             const r = node.radius + glow * 0.6;
 
             const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, r * 3);
-            gradient.addColorStop(0, `rgba(125, 211, 252, ${0.35 + glow * 0.25})`);
-            gradient.addColorStop(1, 'rgba(125, 211, 252, 0)');
+            gradient.addColorStop(0, `rgba(${companion.r}, ${companion.g}, ${companion.b}, ${0.32 + glow * 0.25})`);
+            gradient.addColorStop(1, `rgba(${companion.r}, ${companion.g}, ${companion.b}, 0)`);
             ctx.fillStyle = gradient;
             ctx.beginPath();
             ctx.arc(node.x, node.y, r * 3, 0, Math.PI * 2);
