@@ -48,6 +48,9 @@ class AiAssistantController extends Controller
             'summary' => $nova->summaryMetrics($company),
             'conversations' => $conversations,
             'chatUrl' => route('assistant.chat'),
+            'agentUrl' => route('assistant.agent.run'),
+            'legacyChatUrl' => route('assistant.chat'),
+            'useAgent' => (bool) config('flowdesk.nova_agent_ui_enabled', true),
             'summaryUrl' => route('assistant.summary'),
             'suggestUrl' => route('assistant.suggest'),
             'speakUrl' => route('assistant.speak'),
@@ -264,6 +267,16 @@ class AiAssistantController extends Controller
         }
 
         $charged = $usage->recordForTask($company, AiCreditUsageService::TASK_ASSISTANT, 'nova_voice');
+
+        event(new \App\Events\Nova\NovaTtsStatusUpdated(
+            (string) $company->id,
+            (int) $request->user()->id,
+            [
+                'status' => 'ready',
+                'provider' => $result['provider'],
+                'message' => mb_substr($data['text'], 0, 120),
+            ],
+        ));
 
         return response($result['binary'], 200, [
             'Content-Type' => $result['mime'],

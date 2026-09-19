@@ -34,6 +34,8 @@ import {
     flowdeskStopNovaSpeech,
     flowdeskUnlockNovaAudio,
 } from './flowdesk-nova-speech';
+import { flowdeskNovaResolvePageContext, flowdeskNovaSendMessage } from './nova/agent-client';
+import { subscribeNovaCompanyActivity } from './nova/activity-stream';
 
 export function registerNovaVoiceNav(Alpine) {
     Alpine.data('novaVoiceNav', (cfg = {}) => ({
@@ -41,12 +43,18 @@ export function registerNovaVoiceNav(Alpine) {
         brand: cfg.brand || 'Nova',
         userName: cfg.userName || '',
         userId: cfg.userId || '',
+        companyId: cfg.companyId || '',
         companyName: cfg.companyName || '',
         voiceCreditCost: cfg.voiceCreditCost || 0,
         appLocale: cfg.appLocale || 'en',
         speechLocale: cfg.speechLocale || flowdeskSpeechLocale(cfg.appLocale),
         speakUrl: cfg.speakUrl || null,
         chatUrl: cfg.chatUrl || null,
+        agentUrl: cfg.agentUrl || null,
+        legacyChatUrl: cfg.legacyChatUrl || cfg.chatUrl || null,
+        useAgent: cfg.useAgent !== false,
+        currentPage: cfg.currentPage || null,
+        currentEntity: cfg.currentEntity || null,
         chatCreditCost: cfg.chatCreditCost || 0,
         briefingUrl: cfg.briefingUrl || null,
         briefingRedirectUrl: cfg.briefingRedirectUrl || null,
@@ -127,9 +135,27 @@ export function registerNovaVoiceNav(Alpine) {
             this.identityPhrases = flowdeskNovaIdentityPhrases(this.appLocale);
             this.creditsHint = this.labels.creditsHint || '';
             this.wakeReplyStorageKey = flowdeskNovaWakeReplyStorageKey(this.userId || this.userName);
+            const pageCtx = flowdeskNovaResolvePageContext(cfg);
+            this.currentPage = pageCtx.currentPage;
+            this.currentEntity = pageCtx.currentEntity;
             this.supported = true;
             this.status = this.labels.alwaysOn || this.labels.wake || '';
             this._audioEl = typeof Audio !== 'undefined' ? new Audio() : null;
+
+            if (this.companyId && typeof subscribeNovaCompanyActivity === 'function') {
+                this._unsubscribeCompany = subscribeNovaCompanyActivity(this.companyId, (payload) => {
+                    if (payload?.message && this._chatLoading) {
+                        this.status = payload.message;
+                    }
+                });
+                this._onTtsStatus = (event) => {
+                    const detail = event?.detail || {};
+                    if (detail.status === 'speaking' && detail.message) {
+                        this.showSpokenTooltip(detail.message);
+                    }
+                };
+                window.addEventListener('nova:tts-status', this._onTtsStatus);
+            }
 
             this.recognition = new SpeechRecognition();
             this.recognition.lang = this.speechLocale;
@@ -244,6 +270,12 @@ export function registerNovaVoiceNav(Alpine) {
                 this.synthesis?.cancel();
                 this.stopRecognition(true);
                 document.removeEventListener('flowdesk-nova-stop', this._onNovaStop);
+                if (typeof this._unsubscribeCompany === 'function') {
+                    this._unsubscribeCompany();
+                }
+                if (this._onTtsStatus) {
+                    window.removeEventListener('nova:tts-status', this._onTtsStatus);
+                }
                 if (window.flowdeskNovaVoiceNav === this) {
                     window.flowdeskNovaVoiceNav = null;
                 }
@@ -533,7 +565,7 @@ export function registerNovaVoiceNav(Alpine) {
                     this.speakIdentityReply();
                     return;
                 }
-                if (question.length >= 3 && this.chatUrl) {
+                if (question.length >= 3 && (this.agentUrl || this.chatUrl || this.legacyChatUrl)) {
                     this.askNovaChat(question);
                     return;
                 }
@@ -613,7 +645,7 @@ export function registerNovaVoiceNav(Alpine) {
         },
 
         async askNovaChat(question) {
-            if (this._chatLoading || !this.chatUrl) {
+            if (this._chatLoading || (!this.agentUrl && !this.chatUrl && !this.legacyChatUrl)) {
                 return;
             }
 
@@ -634,25 +666,32 @@ export function registerNovaVoiceNav(Alpine) {
             this._chatAbort = new AbortController();
 
             try {
-                const res = await fetch(this.chatUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': this._csrf,
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: question,
-                        conversation_id: this.conversationId,
-                    }),
+                const pageCtx = flowdeskNovaResolvePageContext({
+                    currentPage: this.currentPage,
+                    currentEntity: this.currentEntity,
+                });
+
+                const result = await flowdeskNovaSendMessage({
+                    message: question,
+                    conversationId: this.conversationId,
+                    agentUrl: this.agentUrl,
+                    legacyChatUrl: this.legacyChatUrl || this.chatUrl,
+                    useAgent: this.useAgent,
+                    currentPage: pageCtx.currentPage,
+                    currentEntity: pageCtx.currentEntity,
+                    csrf: this._csrf,
                     signal: this._chatAbort.signal,
                 });
 
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) {
-                    throw new Error(flowdeskFetchErrorMessage(res, data, this.labels.requestFailed));
+                if (!result.ok) {
+                    throw new Error(flowdeskFetchErrorMessage(
+                        { ok: false, status: result.status },
+                        result.data,
+                        this.labels.requestFailed,
+                    ));
                 }
 
+                const data = result.data;
                 this.conversationId = data.conversation_id || this.conversationId;
                 const reply = (data.reply || '').trim();
                 if (!reply) {

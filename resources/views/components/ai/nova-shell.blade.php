@@ -11,7 +11,15 @@
     $novaAlpineConfig = [
         'assistantName' => $nova['assistant_name'],
         'wakeBrand' => $brand,
-        'chatUrl' => $nova['chat_url'],
+        'chatUrl' => $nova['chat_url'] ?? route('assistant.chat'),
+        'agentUrl' => $nova['agent_url'] ?? route('assistant.agent.run'),
+        'legacyChatUrl' => $nova['legacy_chat_url'] ?? ($nova['chat_url'] ?? route('assistant.chat')),
+        'useAgent' => array_key_exists('use_agent', $nova)
+            ? (bool) $nova['use_agent']
+            : (bool) config('flowdesk.nova_agent_ui_enabled', true),
+        'currentPage' => $nova['current_page'] ?? ($flowdeskNovaPageContext['current_page'] ?? null),
+        'currentEntity' => $nova['current_entity'] ?? ($flowdeskNovaPageContext['current_entity'] ?? null),
+        'companyId' => $nova['company_id'] ?? (string) (auth()->user()?->company_id ?? ''),
         'speakUrl' => route('assistant.speak'),
         'creditCost' => $nova['credit_cost'] ?? 0,
         'csrf' => csrf_token(),
@@ -37,6 +45,9 @@
                 'company' => trim((string) (auth()->user()?->company?->name ?? '')) ?: config('app.name'),
             ]),
             'browserFallback' => __('nova_voice_browser_fallback'),
+            'confirm' => __('nova_confirm_action'),
+            'cancel' => __('nova_cancel_action'),
+            'activityTitle' => __('nova_activity_title'),
         ],
         'wakeHint' => __('nova_wake_hint', ['name' => $brand]),
         'permissionError' => __('ai_voice_permission'),
