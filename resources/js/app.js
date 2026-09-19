@@ -14,8 +14,11 @@ import { registerFlowdeskCalendar } from './calendar';
 import Sortable from 'sortablejs';
 import { createApp } from 'vue';
 import FlowdeskPulse from './vue/FlowdeskPulse.vue';
+import { subscribeNovaRunActivity, subscribeNovaCompanyActivity } from './nova/activity-stream';
 
 window.Alpine = Alpine;
+window.subscribeNovaRunActivity = subscribeNovaRunActivity;
+window.subscribeNovaCompanyActivity = subscribeNovaCompanyActivity;
 
 /**
  * Match PHP number_format($num, $decimals, $decimal_separator, $thousands_separator).

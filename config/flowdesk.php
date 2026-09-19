@@ -314,6 +314,12 @@ return [
     'ai_assistant_brand_name' => env('FLOWDESK_AI_ASSISTANT_NAME', 'Nova'),
 
     /*
+    | Nova Autopilot kill-switch. Keep false until Phase 30 foundation is stable.
+    | Even when company ai_agent.autopilot_mode=autopilot, unsafe pipelines stay gated.
+    */
+    'nova_autopilot_enabled' => (bool) env('FLOWDESK_NOVA_AUTOPILOT_ENABLED', false),
+
+    /*
     |--------------------------------------------------------------------------
     | Dashboard widgets (keys map to resources/views/dashboard/widgets/*.blade.php)
     |--------------------------------------------------------------------------

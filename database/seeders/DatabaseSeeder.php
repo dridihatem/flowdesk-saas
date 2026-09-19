@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PlatformAdminSeeder::class);
         $this->call(PlanSeeder::class);
         $this->call(CurrencyRateSeeder::class);
+        $this->call(NovaSkillSeeder::class);
         $this->call(ExampleDataSeeder::class);
         $this->call(ClientEmailSampleSeeder::class);
     }
